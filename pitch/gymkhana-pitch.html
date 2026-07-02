@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GymKhana &mdash; Gym Management Made Simple</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --accent: #0ea5e9;
+    --success: #16a34a;
+    --warning: #d97706;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text);
+    background: var(--white);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; }
+
+  @media print {
+    body { font-size: 11.5px; }
+    .page { max-width: 100%; }
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    a { text-decoration: none; color: inherit; }
+    section, .strip { break-inside: avoid; }
+  }
+
+  /* PRINT BAR */
+  .print-bar {
+    background: #1e3a8a;
+    color: white;
+    padding: 12px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .print-bar p { font-size: 12px; opacity: 0.8; }
+  .print-btn {
+    background: white;
+    color: #1e3a8a;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 60%, #0ea5e9 100%);
+    color: white;
+    padding: 60px 60px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -60px;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 5px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero h1 {
+    font-size: 46px;
+    font-weight: 900;
+    line-height: 1.08;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: #93c5fd;
+  }
+  .hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.75);
+    max-width: 500px;
+    margin-bottom: 40px;
+    line-height: 1.65;
+  }
+  .hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .hero-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* PAIN STRIP */
+  .pain-strip {
+    background: #fef9ec;
+    border-top: 3px solid #f59e0b;
+    padding: 28px 60px;
+  }
+  .pain-strip h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 10px;
+  }
+  .pain-strip p {
+    color: #78350f;
+    font-size: 13.5px;
+    line-height: 1.75;
+    max-width: 780px;
+  }
+  .pain-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .pain-tag {
+    background: #fde68a;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #78350f;
+  }
+
+  /* SECTION */
+  .section { padding: 52px 60px; }
+  .section + .section { border-top: 1px solid var(--border); }
+  .section-badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    max-width: 620px;
+    line-height: 1.65;
+  }
+
+  /* FEATURE GRID */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .feat {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    background: var(--white);
+  }
+  .feat-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .feat h3 {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+  .feat p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1.5px solid #86efac;
+    border-radius: 14px;
+    padding: 28px 32px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .highlight-box-icon { font-size: 34px; flex-shrink: 0; margin-top: 2px; }
+  .highlight-box h3 { font-size: 16px; font-weight: 800; color: #14532d; margin-bottom: 6px; }
+  .highlight-box p { font-size: 13px; color: #166534; line-height: 1.7; }
+
+  .highlight-box.blue {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-color: #93c5fd;
+  }
+  .highlight-box.blue h3 { color: #1e3a8a; }
+  .highlight-box.blue p { color: #1d4ed8; }
+
+  /* WHY GRID */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .why-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .why-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 1px;
+  }
+  .why-card h4 { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .why-card p { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* PRICING */
+  .pricing-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .price-card {
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--white);
+    position: relative;
+  }
+  .price-card.star {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .price-star-badge {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .price-body { padding: 24px 22px; }
+  .price-type {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .price-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .price-tagline {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 20px;
+    min-height: 36px;
+  }
+  .price-amount-block { margin-bottom: 20px; }
+  .price-amount {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1;
+  }
+  .price-amount sup {
+    font-size: 14px;
+    font-weight: 600;
+    vertical-align: super;
+    margin-right: 2px;
+    color: var(--muted);
+  }
+  .price-period {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .price-plus {
+    margin: 8px 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .price-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .price-feats { list-style: none; }
+  .price-feats li {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 7px;
+  }
+  .price-feats li::before {
+    content: '\2713';
+    color: var(--success);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .price-feats li.no { color: var(--muted); }
+  .price-feats li.no::before { content: '\2013'; color: #cbd5e1; }
+
+  /* COMPARISON */
+  .cmp { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .cmp th {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+    text-align: center;
+  }
+  .cmp th:first-child { text-align: left; }
+  .cmp th.hl { color: var(--primary); }
+  .cmp td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    text-align: center;
+  }
+  .cmp td:first-child { text-align: left; font-weight: 500; color: var(--text); }
+  .cmp tr:last-child td { border-bottom: none; }
+  .cmp tr:nth-child(even) td { background: #fafbfc; }
+  .yes { color: #16a34a; font-size: 16px; font-weight: 700; }
+  .no  { color: #cbd5e1; font-size: 16px; }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    gap: 0;
+    position: relative;
+    padding-top: 4px;
+  }
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 22px; left: 22px; right: 22px;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+  }
+  .step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+  .step-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid white;
+    box-shadow: 0 0 0 2px var(--primary);
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .step h4 { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .step p { font-size: 11px; color: var(--muted); line-height: 1.5; max-width: 110px; }
+
+  /* QUOTE */
+  .quote {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    border-radius: 0 10px 10px 0;
+    padding: 20px 26px;
+    margin-top: 28px;
+  }
+  .quote p { font-size: 14px; font-style: italic; color: #1e3a8a; line-height: 1.75; }
+  .quote cite { display: block; font-size: 11px; color: var(--primary); font-style: normal; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* FOOTER */
+  .footer {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    padding: 52px 60px;
+    text-align: center;
+  }
+  .footer h2 { font-size: 28px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.02em; }
+  .footer p { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 32px; }
+  .footer-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 30px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn-white { background: white; color: var(--primary); }
+  .btn-outline { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.35); }
+  .footer-fine {
+    margin-top: 32px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <p>GymKhana Sales Brochure &mdash; Open in Chrome, press Ctrl+P, then "Save as PDF"</p>
+  <button class="print-btn" onclick="window.print()">Save as PDF</button>
+</div>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════ HERO ═══ -->
+<section class="hero">
+  <div class="hero-eyebrow">&#127947; GymKhana &mdash; Gym Management Software</div>
+  <h1>Stop Running<br/>Your Gym on<br/><em>WhatsApp &amp; Paper.</em></h1>
+  <p class="hero-sub">
+    GymKhana is a complete gym management system built specifically
+    for Pakistani gyms. Members, billing, attendance, staff &mdash;
+    all in one place, from day one.
+  </p>
+  <div class="hero-pills">
+    <span class="hero-pill">&#9989; Unlimited Members</span>
+    <span class="hero-pill">&#128176; Billing &amp; Invoices</span>
+    <span class="hero-pill">&#128203; Attendance Tracking</span>
+    <span class="hero-pill">&#128105;&#8205;&#127979; Staff &amp; Trainer Management</span>
+    <span class="hero-pill">&#128179; Kuickpay BPS Integrated</span>
+    <span class="hero-pill">&#127968; Multi-Branch Ready</span>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════ PROBLEM ═══ -->
+<div class="pain-strip">
+  <h2>Sound familiar?</h2>
+  <p>
+    A member says they paid last week but you have no record. You don&apos;t know
+    how many members you have this month. Renewals are expiring and no one is
+    following up. Your trainer is late again and there&apos;s no way to track it.
+    Revenue is coming in but you have no idea if the gym is actually profitable.
+    <strong>This is what GymKhana fixes &mdash; completely.</strong>
+  </p>
+  <div class="pain-examples">
+    <span class="pain-tag">&#128561; &ldquo;Who paid? Who didn&apos;t?&rdquo;</span>
+    <span class="pain-tag">&#128202; No revenue visibility</span>
+    <span class="pain-tag">&#128196; Paper registers get lost</span>
+    <span class="pain-tag">&#128242; WhatsApp is not a billing system</span>
+    <span class="pain-tag">&#8987; Missed renewals = lost money</span>
+    <span class="pain-tag">&#128116; No control over staff</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ FEATURES ═══ -->
+<section class="section">
+  <div class="section-badge">What&apos;s Inside</div>
+  <div class="section-title">Everything Your Gym Needs</div>
+  <p class="section-sub">
+    One software. One login. Everything from adding a new member to
+    collecting dues &mdash; handled professionally.
+  </p>
+
+  <div class="feature-grid">
+
+    <div class="feat">
+      <span class="feat-icon">&#128101;</span>
+      <h3>Member Profiles</h3>
+      <p>Full profiles with photo, phone, CNIC, emergency contact, and medical notes. Know every member at a glance.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#127931;</span>
+      <h3>Membership Plans</h3>
+      <p>Create monthly, quarterly, or yearly plans. Assign to any member in seconds. Discounts supported too.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128178;</span>
+      <h3>Billing &amp; Invoices</h3>
+      <p>Invoice generated automatically when a plan is assigned. Track who paid, who owes, and how much &mdash; always live.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#9989;</span>
+      <h3>Attendance Tracking</h3>
+      <p>Manual or QR check-in. See who&apos;s in the gym right now. Daily logs, trends, no paper register needed.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128203;</span>
+      <h3>Receipts &amp; Sharing</h3>
+      <p>Print a receipt or send it via WhatsApp in one tap. Professional format, looks great to the member.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128179;</span>
+      <h3>Kuickpay Integration</h3>
+      <p>Members pay through JazzCash, Easypaisa, or any bank app. System marks them as paid automatically. Zero manual work.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128105;&#8205;&#127979;</span>
+      <h3>Staff &amp; Trainers</h3>
+      <p>Add admins, managers, trainers. Each person only sees what they need to. Track trainer assignments and salary.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128197;</span>
+      <h3>Class Schedule</h3>
+      <p>Create weekly classes with time slots and capacity. Assign trainers, manage bookings, stay organized.</p>
+    </div>
+
+    <div class="feat">
+      <span class="feat-icon">&#128200;</span>
+      <h3>Reports &amp; Revenue</h3>
+      <p>Monthly revenue, member count, who&apos;s expiring this week &mdash; all on one screen. Know your numbers at all times.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════ KUICKPAY CALLOUT ═══ -->
+<section class="section" style="padding-top: 0; padding-bottom: 44px;">
+
+  <div class="highlight-box">
+    <div class="highlight-box-icon">&#128179;</div>
+    <div>
+      <h3>Pakistan&apos;s First Gym Software with Kuickpay BPS</h3>
+      <p>
+        Your members can pay their monthly dues directly through <strong>JazzCash, Easypaisa, bank apps,
+        or any Kuickpay agent</strong> &mdash; and the system marks the invoice as paid automatically.
+        No more &ldquo;I transferred it&rdquo; arguments. No manual checking. It just works.
+      </p>
+    </div>
+  </div>
+
+  <div class="highlight-box blue">
+    <div class="highlight-box-icon">&#128274;</div>
+    <div>
+      <h3>Your Staff Can&apos;t Misuse It</h3>
+      <p>
+        A trainer only sees their own members. A manager can record payments but can&apos;t change prices.
+        Only the owner sees everything. <strong>No more worrying about who has access to what.</strong>
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════ WHY US ═══ -->
+<section class="section" style="background: #f8fafc;">
+  <div class="section-badge">Why GymKhana</div>
+  <div class="section-title">Why Not Just Use Excel or WhatsApp?</div>
+  <p class="section-sub">
+    Excel doesn&apos;t send receipts. WhatsApp doesn&apos;t track who paid.
+    Paper gets lost. Here&apos;s what you get with GymKhana:
+  </p>
+
+  <div class="why-grid">
+
+    <div class="why-card">
+      <div class="why-num">1</div>
+      <div>
+        <h4>Built for Pakistan, Not Imported</h4>
+        <p>PKR currency, Kuickpay, JazzCash, Easypaisa &mdash; all built in from day one. Not a foreign tool that doesn&apos;t understand how our gyms work.</p>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">2</div>
+      <div>
+        <h4>See Your Revenue Every Day</h4>
+        <p>Open the dashboard and instantly see how much came in this month, what&apos;s pending, and which members are expiring. No calculating, no guessing.</p>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">3</div>
+      <div>
+        <h4>Never Miss a Renewal Again</h4>
+        <p>See exactly which memberships are expiring in the next 7, 14, or 30 days. Send reminders with one click. Renewals start happening automatically.</p>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">4</div>
+      <div>
+        <h4>Unlimited Members, One Price</h4>
+        <p>Whether you have 50 or 5,000 members, the price doesn&apos;t change. Most other software charges you more as you grow. We don&apos;t.</p>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">5</div>
+      <div>
+        <h4>Multiple Branches, One Account</h4>
+        <p>Have more than one gym? Manage all locations from the same login. Each branch keeps its own members, staff, and revenue separated and organized.</p>
+      </div>
+    </div>
+
+    <div class="why-card">
+      <div class="why-num">6</div>
+      <div>
+        <h4>Your Data, Always Safe</h4>
+        <p>Export everything to Excel anytime &mdash; members, billing history, attendance. Your data is never locked. Cloud backup keeps it safe from loss.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PRICING ═══ -->
+<section class="section page-break">
+  <div class="section-badge">Pricing</div>
+  <div class="section-title">Three Ways to Get Started</div>
+  <p class="section-sub">
+    Pick the option that works for your gym. No hidden costs.
+    No per-member fees. No surprises.
+  </p>
+
+  <div class="pricing-row">
+
+    <!-- Basic -Offline -->
+    <div class="price-card">
+      <div class="price-body">
+        <div class="price-type">Offline &mdash; Local Setup</div>
+        <div class="price-name">Basic</div>
+        <p class="price-tagline">Runs on your own computer. No internet needed to use daily.</p>
+        <div class="price-amount-block">
+          <div class="price-amount"><sup>PKR</sup>50,000</div>
+          <div class="price-period">One-time payment &mdash; yours forever</div>
+        </div>
+        <hr class="price-divider" />
+        <ul class="price-feats">
+          <li>Unlimited members</li>
+          <li>Billing &amp; invoices</li>
+          <li>Attendance tracking</li>
+          <li>Staff management</li>
+          <li>Reports &amp; revenue</li>
+          <li>Works without internet</li>
+          <li>Single branch</li>
+          <li class="no">Kuickpay payments</li>
+          <li class="no">Multiple branches</li>
+          <li class="no">Automatic updates</li>
+          <li class="no">Cloud backup</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Online -->
+    <div class="price-card">
+      <div class="price-body">
+        <div class="price-type">Online &mdash; Your Own Server</div>
+        <div class="price-name">Online </div>
+        <p class="price-tagline">Hosted on your own domain &amp; server. Full control over everything.</p>
+        <div class="price-amount-block">
+          <div class="price-amount"><sup>PKR</sup>80,000</div>
+          <div class="price-period">One-time payment &mdash; includes setup</div>
+        </div>
+        <hr class="price-divider" />
+        <ul class="price-feats">
+          <li>Everything in Starter</li>
+          <li>Multiple branches</li>
+          <li>Kuickpay BPS payments</li>
+          <li>Your own domain</li>
+          <li>WhatsApp receipt sharing</li>
+          <li>Export to Excel</li>
+          <li>Full setup included</li>
+          <li class="no">Managed hosting</li>
+          <li class="no">Auto updates</li>
+          <li class="no">Cloud backup included</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Enterprise SaaS -->
+    <div class="price-card star">
+      <div class="price-star-badge">&#11088; Most Popular &mdash; Recommended</div>
+      <div class="price-body">
+        <div class="price-type">Cloud SaaS &mdash; We Host Everything</div>
+        <div class="price-name">Plug and Play</div>
+        <p class="price-tagline">Just log in and run your gym. Zero setup, zero maintenance.</p>
+        <div class="price-amount-block">
+          <div class="price-amount"><sup>PKR</sup>25,000</div>
+          <div class="price-period">Per month &mdash; everything included</div>
+          <div class="price-plus">+ one-time setup</div>
+          <div class="price-amount" style="font-size: 20px;"><sup>PKR</sup>70,000</div>
+          <div class="price-period">Paid once when you start</div>
+        </div>
+        <hr class="price-divider" />
+        <ul class="price-feats">
+          <li>Everything in Professional</li>
+          <li>Zero technical setup needed</li>
+          <li>We handle all maintenance</li>
+          <li>Daily automatic backups</li>
+          <li>Always latest version</li>
+          <li>Secure &amp; fast hosting</li>
+          <li>Priority WhatsApp support</li>
+          <li>Multiple branches included</li>
+          <li>Kuickpay BPS included</li>
+          <li>SSL &amp; custom domain</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="quote">
+    <p>&ldquo;Every plan supports unlimited members &mdash; your gym can go from 50 to 5,000 members
+    without paying a single rupee more. We grow with you.&rdquo;</p>
+    <cite>GymKhana &mdash; Our Promise</cite>
+  </div>
+</section>
+
+<!-- ════════════════════════════ COMPARISON ═══ -->
+<section class="section" style="background: #f8fafc;">
+  <div class="section-badge">Full Comparison</div>
+  <div class="section-title">What&apos;s in Each Plan?</div>
+  <br/>
+  <table class="cmp">
+    <thead>
+      <tr>
+        <th style="width:44%; text-align:left;">Feature</th>
+        <th>Starter</th>
+        <th>Professional</th>
+        <th class="hl">Enterprise</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Unlimited Members</td>        <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Membership Plans</td>          <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Invoices &amp; Billing</td>    <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Partial Payments</td>          <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Attendance Tracking</td>       <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Printable Receipts</td>        <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Staff &amp; Role Access</td>   <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Trainer Management</td>        <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Class Scheduling</td>          <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Reports &amp; Revenue</td>     <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Export to Excel (CSV)</td>     <td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>WhatsApp Receipt Sharing</td>  <td class="no">&#8211;</td> <td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Multiple Branches</td>         <td class="no">&#8211;</td> <td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Kuickpay BPS Payments</td>     <td class="no">&#8211;</td> <td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Custom Domain</td>             <td class="no">&#8211;</td> <td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+      <tr><td>Hosted &amp; Managed by Us</td><td class="no">&#8211;</td> <td class="no">&#8211;</td> <td class="yes">&#10003;</td></tr>
+      <tr><td>Automatic Updates</td>         <td class="no">&#8211;</td> <td class="no">&#8211;</td> <td class="yes">&#10003;</td></tr>
+      <tr><td>Daily Cloud Backup</td>        <td class="no">&#8211;</td> <td class="no">&#8211;</td> <td class="yes">&#10003;</td></tr>
+      <tr><td>Priority Support</td>          <td class="no">&#8211;</td> <td class="no">&#8211;</td> <td class="yes">&#10003;</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════ HOW IT WORKS ═══ -->
+<section class="section">
+  <div class="section-badge">Getting Started</div>
+  <div class="section-title">You&apos;re Fully Running in Under a Day</div>
+  <p class="section-sub">For the Enterprise plan &mdash; we set everything up for you. You just show up and use it.</p>
+  <br/>
+  <div class="steps">
+    <div class="step">
+      <div class="step-dot">1</div>
+      <h4>We Set Up Your Account</h4>
+      <p>We create your gym on the platform and send your login</p>
+    </div>
+    <div class="step">
+      <div class="step-dot">2</div>
+      <h4>Add Your Members</h4>
+      <p>Enter your existing members or we help you import them</p>
+    </div>
+    <div class="step">
+      <div class="step-dot">3</div>
+      <h4>Create Your Plans</h4>
+      <p>Monthly, quarterly, yearly &mdash; set your prices</p>
+    </div>
+    <div class="step">
+      <div class="step-dot">4</div>
+      <h4>Add Your Staff</h4>
+      <p>Trainers, managers &mdash; each gets their own login</p>
+    </div>
+    <div class="step">
+      <div class="step-dot">5</div>
+      <h4>You&apos;re Live!</h4>
+      <p>Start taking attendance, billing, and running reports</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER CTA ═══ -->
+<section class="footer">
+  <h2>Ready to Run Your Gym Properly?</h2>
+  <p>Get in touch today. We&apos;ll show you a live demo and answer every question you have &mdash; no pressure.</p>
+  <div class="footer-btns">
+    <a href="mailto:moizpasha.developer@gmail.com" class="btn btn-white">
+      &#128139; Email Us
+    </a>
+    <a href="https://wa.me/923451298319" class="btn btn-outline">
+      &#128172; WhatsApp: 0345-1298319
+    </a>
+  </div>
+  <div class="footer-fine">GymKhana &nbsp;&middot;&nbsp; Built in Pakistan &nbsp;&middot;&nbsp; 2026</div>
+</section>
+
+</div>
+</body>
+</html>

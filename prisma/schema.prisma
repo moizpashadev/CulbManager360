@@ -1,0 +1,624 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── SUPER ADMIN ────────────────────────────────────────────────────────────
+
+model SuperAdmin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+// ─── PLATFORM SUBSCRIPTION PLANS ───────────────────────────────────────────
+
+model PlatformPlan {
+  id           String           @id @default(cuid())
+  name         String
+  type         PlatformPlanType
+  description  String?
+  oneTimePrice Decimal?         @db.Decimal(10, 2)
+  monthlyPrice Decimal?         @db.Decimal(10, 2)
+  features     String?
+  isActive     Boolean          @default(true)
+  sortOrder    Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  tenants Tenant[]
+}
+
+enum PlatformPlanType {
+  OFFLINE
+  SELF_HOSTED
+  SAAS
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+// ─── TENANT ────────────────────────────────────────────────────────────────
+
+model Tenant {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  logoUrl      String?
+  contactEmail String?
+  phone        String?
+  address      String?
+  isActive              Boolean  @default(true)
+  kuickpayInstitutionId String?
+  // Module flags — control which features/sidebar items are visible
+  moduleGym             Boolean  @default(true)
+  moduleCourts          Boolean  @default(false)
+  // Subscription
+  platformPlanId     String?
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  subscriptionStart  DateTime?
+  nextBillingDate    DateTime?
+  subscriptionNotes  String?
+  createdAt             DateTime @default(now())
+
+  members           Member[]
+  plans             MembershipPlan[]
+  staff             Staff[]
+  attendance        Attendance[]
+  classes           ClassSchedule[]
+  invoices          Invoice[]
+  branches          Branch[]
+  trainerAttendance TrainerAttendance[]
+  facilities        TenantFacility[]
+  progressEntries   ProgressEntry[]
+  progressReports   ProgressReport[]
+  courts            Court[]
+  slotBookings      SlotBooking[]
+  platformPlan      PlatformPlan?       @relation(fields: [platformPlanId], references: [id])
+}
+
+// ─── BRANCH ────────────────────────────────────────────────────────────────
+
+model Branch {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tenant            Tenant                    @relation(fields: [tenantId], references: [id])
+  members           Member[]
+  staffBranches     StaffBranch[]
+  attendance        Attendance[]
+  trainerAttendance TrainerAttendance[]
+  trainerSlots      TrainerSlot[]
+  assignments       TrainerMemberAssignment[]
+  memberships       Membership[]
+  invoices          Invoice[]
+}
+
+// ─── MEMBER ────────────────────────────────────────────────────────────────
+
+model Member {
+  id               String       @id @default(cuid())
+  tenantId         String
+  branchId         String?
+  firstName        String
+  lastName         String
+  email            String
+  phone            String?
+  cnic             String?
+  emergencyContact String?
+  emergencyPhone   String?
+  medicalNotes     String?
+  profileImage     String?
+  dateOfBirth      DateTime?
+  joinDate         DateTime     @default(now())
+  status           MemberStatus @default(ACTIVE)
+  consumerNumber   String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  tenant          Tenant                    @relation(fields: [tenantId], references: [id])
+  branch          Branch?                   @relation(fields: [branchId], references: [id])
+  memberships     Membership[]
+  attendance      Attendance[]
+  bookings        ClassBooking[]
+  invoices        Invoice[]
+  assignments     TrainerMemberAssignment[]
+  health          MemberHealth?
+  progressEntries ProgressEntry[]
+  progressReports ProgressReport[]
+  slotBookings    SlotBooking[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, consumerNumber])
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  EXPIRED
+}
+
+// ─── MEMBERSHIP PLAN ───────────────────────────────────────────────────────
+
+model MembershipPlan {
+  id           String    @id @default(cuid())
+  tenantId     String
+  name         String
+  description  String?
+  price        Decimal   @db.Decimal(10, 2)
+  durationDays Int
+  priceMode    PriceMode @default(MANUAL)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+
+  tenant      Tenant         @relation(fields: [tenantId], references: [id])
+  memberships Membership[]
+  facilities  PlanFacility[]
+}
+
+enum PriceMode {
+  MANUAL
+  FACILITY_BASED
+}
+
+// ─── PLAN ↔ FACILITY (many-to-many) ───────────────────────────────────────
+
+model PlanFacility {
+  planId     String
+  facilityId String
+
+  plan     MembershipPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  facility TenantFacility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@id([planId, facilityId])
+}
+
+// ─── MEMBERSHIP ────────────────────────────────────────────────────────────
+
+model Membership {
+  id         String           @id @default(cuid())
+  memberId   String
+  planId     String
+  branchId   String?
+  startDate  DateTime
+  endDate    DateTime
+  status     MembershipStatus @default(ACTIVE)
+  discount   Decimal          @default(0) @db.Decimal(10, 2)
+  finalPrice Decimal          @db.Decimal(10, 2)
+  notes      String?
+  createdAt  DateTime         @default(now())
+
+  member   Member         @relation(fields: [memberId], references: [id])
+  plan     MembershipPlan @relation(fields: [planId], references: [id])
+  branch   Branch?        @relation(fields: [branchId], references: [id])
+  invoices Invoice[]
+}
+
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PAUSED
+}
+
+// ─── INVOICE ──────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String        @id @default(cuid())
+  tenantId      String
+  memberId      String?
+  membershipId  String?
+  branchId      String?
+  slotBookingId String?       @unique
+  type          InvoiceType
+  description   String?
+  subtotal      Decimal       @db.Decimal(10, 2)
+  discount      Decimal       @default(0) @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  paidAmount    Decimal       @default(0) @db.Decimal(10, 2)
+  paymentStatus        PaymentStatus @default(PENDING)
+  paymentMethod        PaymentMethod?
+  paidAt               DateTime?
+  dueDate              DateTime?
+  notes                String?
+  kuickpayConsumerNo   String?
+  kuickpayTranAuthId   String?
+  kuickpayBankMnemonic String?
+  createdAt            DateTime      @default(now())
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  member      Member?      @relation(fields: [memberId], references: [id])
+  membership  Membership?  @relation(fields: [membershipId], references: [id])
+  branch      Branch?      @relation(fields: [branchId], references: [id])
+  slotBooking SlotBooking? @relation(fields: [slotBookingId], references: [id])
+}
+
+enum InvoiceType {
+  REGISTRATION
+  MEMBERSHIP
+  RENEWAL
+  OTHER
+  COURT_BOOKING
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIAL
+  WAIVED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  EASYPAISA
+  JAZZCASH
+  CARD
+  CHEQUE
+  KUICKPAY
+}
+
+// ─── ATTENDANCE ────────────────────────────────────────────────────────────
+
+model Attendance {
+  id           String           @id @default(cuid())
+  memberId     String
+  tenantId     String
+  branchId     String?
+  checkedInAt  DateTime         @default(now())
+  checkedOutAt DateTime?
+  method       AttendanceMethod @default(MANUAL)
+  notes        String?
+
+  member Member  @relation(fields: [memberId], references: [id])
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  branch Branch? @relation(fields: [branchId], references: [id])
+}
+
+enum AttendanceMethod {
+  MANUAL
+  QR_CODE
+  FINGERPRINT
+}
+
+// ─── STAFF ─────────────────────────────────────────────────────────────────
+
+model Staff {
+  id             String          @id @default(cuid())
+  tenantId       String
+  firstName      String
+  lastName       String
+  email          String
+  passwordHash   String
+  role           StaffRole       @default(STAFF)
+  isActive       Boolean         @default(true)
+  // Trainer-specific fields
+  employmentType EmploymentType?
+  salaryAmount   Decimal?        @db.Decimal(10, 2)
+  commissionRate Decimal?        @db.Decimal(5, 2)
+  specialization String?
+  bio            String?
+  createdAt      DateTime        @default(now())
+
+  tenant            Tenant                    @relation(fields: [tenantId], references: [id])
+  classes           ClassSchedule[]
+  staffBranches     StaffBranch[]
+  trainerSlots      TrainerSlot[]
+  trainerAssign     TrainerMemberAssignment[] @relation("TrainerAssignments")
+  trainerAttendance TrainerAttendance[]
+  progressEntries   ProgressEntry[]
+  progressReports   ProgressReport[]
+
+  @@unique([tenantId, email])
+}
+
+enum StaffRole {
+  OWNER
+  ADMIN
+  MANAGER
+  STAFF
+  TRAINER
+}
+
+enum EmploymentType {
+  SALARIED
+  COMMISSION
+  SELF_EMPLOYED
+}
+
+// ─── STAFF ↔ BRANCH (many-to-many) ────────────────────────────────────────
+
+model StaffBranch {
+  staffId   String
+  branchId  String
+  isPrimary Boolean @default(false)
+
+  staff  Staff  @relation(fields: [staffId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@id([staffId, branchId])
+}
+
+// ─── TRAINER SLOT (availability window) ───────────────────────────────────
+
+model TrainerSlot {
+  id        String  @id @default(cuid())
+  tenantId  String
+  trainerId String
+  branchId  String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  capacity  Int     @default(1)
+  isActive  Boolean @default(true)
+
+  trainer     Staff                     @relation(fields: [trainerId], references: [id])
+  branch      Branch                    @relation(fields: [branchId], references: [id])
+  assignments TrainerMemberAssignment[]
+}
+
+// ─── TRAINER ↔ MEMBER ASSIGNMENT ──────────────────────────────────────────
+
+model TrainerMemberAssignment {
+  id        String           @id @default(cuid())
+  tenantId  String
+  trainerId String
+  memberId  String
+  branchId  String
+  slotId    String?
+  startDate DateTime
+  endDate   DateTime?
+  status    AssignmentStatus @default(ACTIVE)
+  notes     String?
+  createdAt DateTime         @default(now())
+
+  trainer Staff        @relation("TrainerAssignments", fields: [trainerId], references: [id])
+  member  Member       @relation(fields: [memberId], references: [id])
+  branch  Branch       @relation(fields: [branchId], references: [id])
+  slot    TrainerSlot? @relation(fields: [slotId], references: [id])
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// ─── TRAINER ATTENDANCE ────────────────────────────────────────────────────
+
+model TrainerAttendance {
+  id           String    @id @default(cuid())
+  tenantId     String
+  trainerId    String
+  branchId     String
+  checkedInAt  DateTime  @default(now())
+  checkedOutAt DateTime?
+  notes        String?
+
+  tenant  Tenant @relation(fields: [tenantId], references: [id])
+  trainer Staff  @relation(fields: [trainerId], references: [id])
+  branch  Branch @relation(fields: [branchId], references: [id])
+}
+
+// ─── FACILITIES ────────────────────────────────────────────────────────────
+
+model TenantFacility {
+  id           String       @id @default(cuid())
+  tenantId     String
+  facilityType FacilityType
+  isEnabled    Boolean      @default(true)
+  monthlyFee   Decimal      @default(0) @db.Decimal(10, 2)
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  tenant         Tenant         @relation(fields: [tenantId], references: [id])
+  planFacilities PlanFacility[]
+
+  @@unique([tenantId, facilityType])
+}
+
+enum FacilityType {
+  SWIMMING_POOL
+  SAUNA
+  STEAM_ROOM
+  JACUZZI
+  SQUASH_COURT
+  BADMINTON_COURT
+  BASKETBALL_COURT
+  BOXING_RING
+  YOGA_STUDIO
+  CYCLING_STUDIO
+  CROSSFIT_AREA
+  CARDIO_ZONE
+  FREE_WEIGHTS
+  LOCKER_ROOMS
+  PARKING
+  JUICE_BAR
+  MASSAGE_THERAPY
+  PHYSICAL_THERAPY
+  CHILDCARE
+  MEDITATION_ROOM
+}
+
+// ─── CLASS SCHEDULE ────────────────────────────────────────────────────────
+
+model ClassSchedule {
+  id           String   @id @default(cuid())
+  tenantId     String
+  title        String
+  description  String?
+  instructorId String?
+  dayOfWeek    Int
+  startTime    String
+  endTime      String
+  capacity     Int      @default(20)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  tenant     Tenant         @relation(fields: [tenantId], references: [id])
+  instructor Staff?         @relation(fields: [instructorId], references: [id])
+  bookings   ClassBooking[]
+}
+
+model ClassBooking {
+  id         String        @id @default(cuid())
+  scheduleId String
+  memberId   String
+  classDate  DateTime
+  status     BookingStatus @default(CONFIRMED)
+  createdAt  DateTime      @default(now())
+
+  schedule ClassSchedule @relation(fields: [scheduleId], references: [id])
+  member   Member        @relation(fields: [memberId], references: [id])
+
+  @@unique([scheduleId, memberId, classDate])
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  ATTENDED
+}
+
+// ─── COURTS ────────────────────────────────────────────────────────────────
+
+model Court {
+  id           String   @id @default(cuid())
+  tenantId     String
+  name         String
+  description  String?
+  sport        String?
+  pricePerSlot Decimal  @default(0) @db.Decimal(10, 2)
+  slotDuration Int      @default(60)
+  openTime     String   @default("06:00")
+  closeTime    String   @default("22:00")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant   Tenant        @relation(fields: [tenantId], references: [id])
+  bookings SlotBooking[]
+}
+
+// ─── SLOT BOOKINGS ─────────────────────────────────────────────────────────
+
+model SlotBooking {
+  id            String            @id @default(cuid())
+  tenantId      String
+  courtId       String
+  memberId      String?
+  customerName  String?
+  customerPhone String?
+  bookingDate   DateTime
+  startTime     String
+  endTime       String
+  durationSlots Int               @default(1)
+  totalAmount   Decimal           @db.Decimal(10, 2)
+  paymentStatus PaymentStatus     @default(PENDING)
+  paymentMethod PaymentMethod?
+  paidAmount    Decimal           @default(0) @db.Decimal(10, 2)
+  notes              String?
+  kuickpayConsumerNo String?
+  status             SlotBookingStatus @default(CONFIRMED)
+  createdAt          DateTime          @default(now())
+
+  tenant  Tenant   @relation(fields: [tenantId], references: [id])
+  court   Court    @relation(fields: [courtId], references: [id])
+  member  Member?  @relation(fields: [memberId], references: [id])
+  invoice Invoice?
+}
+
+enum SlotBookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+// ─── MEMBER HEALTH PROFILE ─────────────────────────────────────────────────
+
+model MemberHealth {
+  id                String     @id @default(cuid())
+  memberId          String     @unique
+  height            Float?
+  initialWeight     Float?
+  bloodGroup        String?
+  medicalConditions String?
+  allergies         String?
+  goal              HealthGoal @default(GENERAL_FITNESS)
+  targetWeight      Float?
+  notes             String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+enum HealthGoal {
+  WEIGHT_LOSS
+  MUSCLE_GAIN
+  GENERAL_FITNESS
+  REHABILITATION
+  ENDURANCE
+  FLEXIBILITY
+}
+
+// ─── PROGRESS ENTRIES (weekly check-ins) ──────────────────────────────────
+
+model ProgressEntry {
+  id         String   @id @default(cuid())
+  memberId   String
+  tenantId   String
+  trainerId  String?
+  date       DateTime @default(now())
+  weight     Float?
+  chest      Float?
+  waist      Float?
+  hips       Float?
+  bicep      Float?
+  thigh      Float?
+  shoulders  Float?
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  member  Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  trainer Staff?  @relation(fields: [trainerId], references: [id])
+}
+
+// ─── PROGRESS REPORTS ──────────────────────────────────────────────────────
+
+model ProgressReport {
+  id        String   @id @default(cuid())
+  memberId  String
+  tenantId  String
+  trainerId String?
+  title     String
+  notes     String?
+  createdAt DateTime @default(now())
+
+  member  Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  trainer Staff?  @relation(fields: [trainerId], references: [id])
+}

@@ -2,26 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Club Manager 360 × Kuickpay theme — #0a8f5c green, off-white surface */
+    --background: 40 20% 97%;          /* #f9f9f7 off-white */
+    --foreground: 0 0% 10%;            /* near-black text */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 157 89% 30%;            /* #0a8f5c Kuickpay green */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 157 30% 95%;          /* #eef8f4 light mint */
+    --secondary-foreground: 157 89% 25%;
+
+    --muted: 40 10% 93%;               /* #eeecea warm gray */
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 157 70% 40%;             /* #18b077 bright green */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 88%;                /* #e0e0e0 */
+    --input: 0 0% 88%;
+    --ring: 157 89% 30%;
+
+    --radius: 0.5rem;
+
+    --warning: 38 92% 50%;              /* #f59e0b amber */
+    --warning-foreground: 0 0% 100%;
+
+    /* Topbar */
+    --topbar: 0 0% 10%;                /* #1a1a1a */
+    --topbar-foreground: 0 0% 95%;
+  }
+
+  * {
+    @apply border-border box-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  code, kbd, pre, .font-mono {
+    font-family: var(--font-mono), monospace;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@media print {
+  /* Hide sidebar, topbar and nav elements when printing a receipt */
+  aside, nav, header, .print-hidden {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+  main {
+    padding: 0 !important;
+    max-width: 100% !important;
   }
 }

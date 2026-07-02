@@ -1,0 +1,22 @@
+🌱  Seeding GymKhana …
+
+✅  Seed complete — FitZone Karachi
+
+  ── Login Accounts ──────────────────────────────────────
+  SUPER ADMIN   super@gymkhana.com        super123
+  OWNER         admin@fitzone.pk           admin123
+  ADMIN         sara@fitzone.pk            admin456
+  MANAGER       usman@fitzone.pk           manager123
+  STAFF         maria@fitzone.pk           staff123
+  TRAINER 1     ali.trainer@fitzone.pk     trainer123
+  TRAINER 2     fatima.trainer@fitzone.pk  trainer123
+  TRAINER 3     zain.trainer@fitzone.pk    trainer123
+
+  ── Branches ────────────────────────────────────────────
+  Main Campus · DHA Branch · Gulshan Branch
+
+  ── Data ────────────────────────────────────────────────
+  15 members · 5 plans · 15 memberships · 3 trainers
+  12 trainer slots · 10 member–trainer assignments
+  14 days of attendance records
+Shell cwd was reset to C:\Users\Moiz Pasha
