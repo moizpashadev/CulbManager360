@@ -10,9 +10,19 @@ export async function middleware(request: NextRequest) {
   const isDashboard = pathname.startsWith("/dashboard")
   const isAdmin     = pathname.startsWith("/admin")
 
+  // TEMP DIAGNOSTIC — remove after debugging the Edge JWT_SECRET issue
+  const diagHeaders = {
+    "x-diag-jwt-secret-set": String(!!process.env.JWT_SECRET),
+    "x-diag-jwt-secret-len": String(process.env.JWT_SECRET?.length ?? 0),
+    "x-diag-token-present": String(!!token),
+    "x-diag-session-valid": String(!!session),
+  }
+
   // Unauthenticated → redirect to login
   if ((isDashboard || isAdmin) && !session) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    const res = NextResponse.redirect(new URL("/login", request.url))
+    Object.entries(diagHeaders).forEach(([k, v]) => res.headers.set(k, v))
+    return res
   }
 
   // Authenticated on login page → redirect to correct home
