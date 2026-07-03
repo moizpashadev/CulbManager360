@@ -43,13 +43,20 @@ export async function POST(request: NextRequest) {
   // 2. Regular gym staff
   const staff = await prisma.staff.findFirst({
     where: { email: lowerEmail, isActive: true },
-    include: { tenant: { select: { name: true, moduleGym: true, moduleCourts: true } } },
+    include: { tenant: { select: { name: true, moduleGym: true, moduleCourts: true, isActive: true } } },
   })
 
   if (!staff) return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
 
   const valid = await verifyPassword(password, staff.passwordHash)
   if (!valid) return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+
+  if (!staff.tenant.isActive) {
+    return NextResponse.json(
+      { error: "This gym's account is suspended. Please contact platform support." },
+      { status: 403 }
+    )
+  }
 
   const token = await signToken({
     sub: staff.id,

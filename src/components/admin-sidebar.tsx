@@ -21,6 +21,7 @@ const navGroups: NavGroup[] = [
     label: "Sales",
     items: [
       { href: "/admin/plans", label: "Subscription Plans", icon: CreditCard },
+      { href: "/admin/billing", label: "Billing", icon: CreditCard },
     ],
   },
   {

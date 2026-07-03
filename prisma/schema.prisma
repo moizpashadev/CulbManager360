@@ -34,7 +34,8 @@ model PlatformPlan {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  tenants Tenant[]
+  tenants          Tenant[]
+  platformInvoices PlatformInvoice[]
 }
 
 enum PlatformPlanType {
@@ -48,6 +49,32 @@ enum SubscriptionStatus {
   ACTIVE
   PAST_DUE
   SUSPENDED
+  CANCELLED
+}
+
+// ─── PLATFORM INVOICES (gym → platform billing) ───────────────────────────
+
+model PlatformInvoice {
+  id             String                @id @default(cuid())
+  tenantId       String
+  platformPlanId String?
+  amount         Decimal               @db.Decimal(10, 2)
+  periodStart    DateTime
+  periodEnd      DateTime
+  dueDate        DateTime
+  status         PlatformInvoiceStatus @default(PENDING)
+  paidAt         DateTime?
+  notes          String?
+  createdAt      DateTime              @default(now())
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  platformPlan PlatformPlan? @relation(fields: [platformPlanId], references: [id])
+}
+
+enum PlatformInvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
   CANCELLED
 }
 
@@ -80,6 +107,7 @@ model Tenant {
   attendance        Attendance[]
   classes           ClassSchedule[]
   invoices          Invoice[]
+  platformInvoices  PlatformInvoice[]
   branches          Branch[]
   trainerAttendance TrainerAttendance[]
   facilities        TenantFacility[]
