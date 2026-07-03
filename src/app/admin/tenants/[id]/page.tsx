@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ArrowLeft, Building2, Users, UserCog, CreditCard, MapPin } from "lucide-react"
 import { SubscriptionForm } from "./subscription-form"
+import { AddStaffForm } from "./add-staff-form"
 
 type Props = { params: { id: string }; searchParams: { q?: string; status?: string } }
 
@@ -252,8 +253,9 @@ export default async function AdminTenantDetailPage({ params, searchParams }: Pr
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Staff */}
         <div className="rounded-lg border border-border bg-white shadow-sm">
-          <div className="border-b border-border px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
             <h2 className="text-sm font-semibold text-foreground">Staff ({staffList.length})</h2>
+            <AddStaffForm tenantId={params.id} />
           </div>
           {staffList.length === 0 ? (
             <p className="px-6 py-8 text-sm text-muted-foreground">No staff yet.</p>
