@@ -271,7 +271,7 @@ export default function LoginPage() {
     })
     const data = await res.json()
     if (res.ok) {
-      router.push(data.redirect ?? "/dashboard")
+      window.location.href = data.redirect ?? "/dashboard"
     } else {
       setError(data.error ?? "Login failed")
       setLoading(false)
