@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
-import { Grid3x3 } from "lucide-react"
 import { CourtsClient } from "./courts-client"
 
 function formatTime(t: string) {

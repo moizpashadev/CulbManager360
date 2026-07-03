@@ -17,7 +17,7 @@ interface StatCardProps {
   format?: "currency" | "integer"
 }
 
-export function StatCard({ label, value, prefix, suffix, sub, icon, iconColor, trend, format }: StatCardProps) {
+export function StatCard({ label, value, prefix, suffix, sub, icon, iconColor, trend }: StatCardProps) {
   const nodeRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
