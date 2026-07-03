@@ -2,7 +2,8 @@ import { PrismaClient } from "../src/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 import bcrypt from "bcryptjs"
 
-const adapter = new PrismaPg({ connectionString: "postgresql://postgres:password@localhost:5432/gymkhana?schema=public" })
+const connectionString = process.env.DATABASE_URL ?? "postgresql://postgres:password@localhost:5432/gymkhana?schema=public"
+const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter })
 
 function addDays(d: Date, n: number) {
@@ -13,9 +14,9 @@ function subDays(d: Date, n: number) {
 }
 
 async function main() {
-  const NOW = new Date("2026-06-18T10:00:00Z")
+  const NOW = new Date()
 
-  console.log("🌱  Seeding Club Manager 360 …")
+  console.log("🌱  Seeding Club Manager 360 — Fitness Nation …")
 
   // ── Super Admin ────────────────────────────────────────────────────────────
   const superHash = await bcrypt.hash("super123", 10)
@@ -28,13 +29,13 @@ async function main() {
   // ── Tenant ─────────────────────────────────────────────────────────────────
   const tenant = await prisma.tenant.upsert({
     where: { id: "demo-tenant" },
-    update: {},
+    update: { name: "Fitness Nation", slug: "fitness-nation", contactEmail: "info@fitnessnation.pk", phone: "021-34500000", address: "Karachi, Pakistan" },
     create: {
       id: "demo-tenant",
-      name: "FitZone Karachi",
-      slug: "fitzone-karachi",
-      contactEmail: "owner@fitzone.pk",
-      phone: "021-35000000",
+      name: "Fitness Nation",
+      slug: "fitness-nation",
+      contactEmail: "info@fitnessnation.pk",
+      phone: "021-34500000",
       address: "Karachi, Pakistan",
     },
   })
@@ -42,40 +43,40 @@ async function main() {
   // ── Branches ────────────────────────────────────────────────────────────────
   const branchMain = await prisma.branch.upsert({
     where: { id: "branch-main" },
-    update: {},
+    update: { name: "Fitness Nation — Clifton", address: "Plot 5-C, Lane 7, Khayaban-e-Ittehad, Clifton, Karachi", phone: "021-34501111", email: "clifton@fitnessnation.pk" },
     create: {
       id: "branch-main",
       tenantId: tenant.id,
-      name: "Main Campus",
-      address: "Plot 12, Block 5, Clifton, Karachi",
-      phone: "021-35001111",
-      email: "clifton@fitzone.pk",
+      name: "Fitness Nation — Clifton",
+      address: "Plot 5-C, Lane 7, Khayaban-e-Ittehad, Clifton, Karachi",
+      phone: "021-34501111",
+      email: "clifton@fitnessnation.pk",
     },
   })
 
   const branchDHA = await prisma.branch.upsert({
     where: { id: "branch-dha" },
-    update: {},
+    update: { name: "Fitness Nation — DHA", address: "26th Street, Phase 5, DHA, Karachi", phone: "021-34502222", email: "dha@fitnessnation.pk" },
     create: {
       id: "branch-dha",
       tenantId: tenant.id,
-      name: "DHA Branch",
-      address: "Phase 6, DHA, Karachi",
-      phone: "021-35002222",
-      email: "dha@fitzone.pk",
+      name: "Fitness Nation — DHA",
+      address: "26th Street, Phase 5, DHA, Karachi",
+      phone: "021-34502222",
+      email: "dha@fitnessnation.pk",
     },
   })
 
   const branchGulshan = await prisma.branch.upsert({
     where: { id: "branch-gulshan" },
-    update: {},
+    update: { name: "Fitness Nation — Gulshan", address: "Block 13-D, University Road, Gulshan-e-Iqbal, Karachi", phone: "021-34503333", email: "gulshan@fitnessnation.pk" },
     create: {
       id: "branch-gulshan",
       tenantId: tenant.id,
-      name: "Gulshan Branch",
-      address: "Block 3, Gulshan-e-Iqbal, Karachi",
-      phone: "021-35003333",
-      email: "gulshan@fitzone.pk",
+      name: "Fitness Nation — Gulshan",
+      address: "Block 13-D, University Road, Gulshan-e-Iqbal, Karachi",
+      phone: "021-34503333",
+      email: "gulshan@fitnessnation.pk",
     },
   })
 
@@ -85,14 +86,14 @@ async function main() {
   // Owner
   const ownerHash = await h("admin123")
   await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "admin@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "admin@fitnessnation.pk" } },
     update: {},
     create: {
       id: "staff-owner",
       tenantId: tenant.id,
       firstName: "Ahmed",
       lastName: "Khan",
-      email: "admin@fitzone.pk",
+      email: "admin@fitnessnation.pk",
       passwordHash: ownerHash,
       role: "OWNER",
     },
@@ -101,14 +102,14 @@ async function main() {
   // Admin
   const adminHash = await h("admin456")
   await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "sara@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "sara@fitnessnation.pk" } },
     update: {},
     create: {
       id: "staff-admin",
       tenantId: tenant.id,
       firstName: "Sara",
       lastName: "Ahmed",
-      email: "sara@fitzone.pk",
+      email: "sara@fitnessnation.pk",
       passwordHash: adminHash,
       role: "ADMIN",
     },
@@ -117,14 +118,14 @@ async function main() {
   // Manager
   const managerHash = await h("manager123")
   await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "usman@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "usman@fitnessnation.pk" } },
     update: {},
     create: {
       id: "staff-manager",
       tenantId: tenant.id,
       firstName: "Usman",
       lastName: "Tariq",
-      email: "usman@fitzone.pk",
+      email: "usman@fitnessnation.pk",
       passwordHash: managerHash,
       role: "MANAGER",
     },
@@ -133,14 +134,14 @@ async function main() {
   // Receptionist (STAFF role)
   const recHash = await h("staff123")
   await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "maria@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "maria@fitnessnation.pk" } },
     update: {},
     create: {
       id: "staff-rec",
       tenantId: tenant.id,
       firstName: "Maria",
       lastName: "Siddiqui",
-      email: "maria@fitzone.pk",
+      email: "maria@fitnessnation.pk",
       passwordHash: recHash,
       role: "STAFF",
     },
@@ -149,14 +150,14 @@ async function main() {
   // ── Trainers ───────────────────────────────────────────────────────────────
   const t1Hash = await h("trainer123")
   const trainer1 = await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "ali.trainer@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "ali.trainer@fitnessnation.pk" } },
     update: {},
     create: {
       id: "trainer-ali",
       tenantId: tenant.id,
       firstName: "Ali",
       lastName: "Hassan",
-      email: "ali.trainer@fitzone.pk",
+      email: "ali.trainer@fitnessnation.pk",
       passwordHash: t1Hash,
       role: "TRAINER",
       employmentType: "SALARIED",
@@ -168,14 +169,14 @@ async function main() {
 
   const t2Hash = await h("trainer123")
   const trainer2 = await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "fatima.trainer@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "fatima.trainer@fitnessnation.pk" } },
     update: {},
     create: {
       id: "trainer-fatima",
       tenantId: tenant.id,
       firstName: "Fatima",
       lastName: "Noor",
-      email: "fatima.trainer@fitzone.pk",
+      email: "fatima.trainer@fitnessnation.pk",
       passwordHash: t2Hash,
       role: "TRAINER",
       employmentType: "COMMISSION",
@@ -187,14 +188,14 @@ async function main() {
 
   const t3Hash = await h("trainer123")
   const trainer3 = await prisma.staff.upsert({
-    where: { tenantId_email: { tenantId: tenant.id, email: "zain.trainer@fitzone.pk" } },
+    where: { tenantId_email: { tenantId: tenant.id, email: "zain.trainer@fitnessnation.pk" } },
     update: {},
     create: {
       id: "trainer-zain",
       tenantId: tenant.id,
       firstName: "Zain",
       lastName: "Mirza",
-      email: "zain.trainer@fitzone.pk",
+      email: "zain.trainer@fitnessnation.pk",
       passwordHash: t3Hash,
       role: "TRAINER",
       employmentType: "SELF_EMPLOYED",
@@ -392,20 +393,20 @@ async function main() {
   }
 
   console.log("")
-  console.log("✅  Seed complete — FitZone Karachi")
+  console.log("✅  Seed complete — Fitness Nation")
   console.log("")
   console.log("  ── Login Accounts ──────────────────────────────────────")
-  console.log("  SUPER ADMIN   super@clubmanager360.com        super123")
-  console.log("  OWNER         admin@fitzone.pk           admin123")
-  console.log("  ADMIN         sara@fitzone.pk            admin456")
-  console.log("  MANAGER       usman@fitzone.pk           manager123")
-  console.log("  STAFF         maria@fitzone.pk           staff123")
-  console.log("  TRAINER 1     ali.trainer@fitzone.pk     trainer123")
-  console.log("  TRAINER 2     fatima.trainer@fitzone.pk  trainer123")
-  console.log("  TRAINER 3     zain.trainer@fitzone.pk    trainer123")
+  console.log("  SUPER ADMIN   super@clubmanager360.com           super123")
+  console.log("  OWNER         admin@fitnessnation.pk        admin123")
+  console.log("  ADMIN         sara@fitnessnation.pk         admin456")
+  console.log("  MANAGER       usman@fitnessnation.pk        manager123")
+  console.log("  STAFF         maria@fitnessnation.pk        staff123")
+  console.log("  TRAINER 1     ali.trainer@fitnessnation.pk  trainer123")
+  console.log("  TRAINER 2     fatima.trainer@fitnessnation.pk trainer123")
+  console.log("  TRAINER 3     zain.trainer@fitnessnation.pk  trainer123")
   console.log("")
   console.log("  ── Branches ────────────────────────────────────────────")
-  console.log("  Main Campus · DHA Branch · Gulshan Branch")
+  console.log("  Clifton · DHA · Gulshan")
   console.log("")
   console.log("  ── Data ────────────────────────────────────────────────")
   console.log("  15 members · 5 plans · 15 memberships · 3 trainers")
