@@ -5,23 +5,23 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Building2, LayoutDashboard, Users, CreditCard, type LucideIcon } from "lucide-react"
 
-type NavItem = { href: string; label: string; icon: LucideIcon; exact?: boolean }
+type NavItem = { href: string; label: string; icon: LucideIcon; exact?: boolean; mobilePriority?: number }
 type NavGroup = { label: string; items: NavItem[] }
 
 const navGroups: NavGroup[] = [
   {
     label: "Platform",
     items: [
-      { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
-      { href: "/admin/tenants", label: "Gyms & Clubs", icon: Building2 },
-      { href: "/admin/members", label: "All Members", icon: Users },
+      { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true, mobilePriority: 1 },
+      { href: "/admin/tenants", label: "Gyms & Clubs", icon: Building2, mobilePriority: 2 },
+      { href: "/admin/members", label: "All Members", icon: Users, mobilePriority: 3 },
     ],
   },
   {
     label: "Sales",
     items: [
       { href: "/admin/plans", label: "Subscription Plans", icon: CreditCard },
-      { href: "/admin/billing", label: "Billing", icon: CreditCard },
+      { href: "/admin/billing", label: "Billing", icon: CreditCard, mobilePriority: 4 },
     ],
   },
   {
@@ -32,6 +32,13 @@ const navGroups: NavGroup[] = [
   },
 ]
 
+export const adminNavGroups = navGroups
+
+export function getAdminMobilePrimaryItems(): NavItem[] {
+  const items = navGroups.flatMap((g) => g.items).filter((i) => i.mobilePriority != null)
+  return items.sort((a, b) => (a.mobilePriority ?? 99) - (b.mobilePriority ?? 99)).slice(0, 4)
+}
+
 export function AdminSidebar() {
   const pathname = usePathname()
 
@@ -41,7 +48,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-border bg-white">
+    <aside className="hidden h-full w-60 shrink-0 flex-col border-r border-border bg-white md:flex">
       <div className="border-b border-border px-4 py-3">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
           Admin Console
