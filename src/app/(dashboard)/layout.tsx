@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar role={session.role} moduleGym={session.moduleGym} moduleCourts={session.moduleCourts} />
-        <main className="flex-1 overflow-y-auto p-4 pb-20 sm:p-8 md:pb-8">{children}</main>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 pb-20 sm:p-8 md:pb-8">{children}</main>
       </div>
       <MobileBottomNav role={session.role} moduleGym={session.moduleGym} moduleCourts={session.moduleCourts} />
       <CommandPalette />

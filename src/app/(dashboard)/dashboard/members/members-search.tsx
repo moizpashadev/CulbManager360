@@ -25,7 +25,7 @@ export function MembersSearch() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full sm:w-auto">
       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
       <input
         type="text"
@@ -33,7 +33,7 @@ export function MembersSearch() {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit(value)}
         placeholder="Search by name, email or phone…"
-        className="h-9 w-72 rounded-md border border-border bg-white pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-72"
       />
       {value && (
         <button

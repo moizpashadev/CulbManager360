@@ -53,14 +53,14 @@ export default async function StaffPage({
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Staff</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {staff.length} {q || role ? "matching " : ""}team member{staff.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Suspense>
             <GridSearch placeholder="Search by name or email…" basePath="/dashboard/staff" />
           </Suspense>

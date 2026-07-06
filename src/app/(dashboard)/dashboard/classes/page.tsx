@@ -61,14 +61,14 @@ export default async function ClassesPage({
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Classes</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {classes.filter((c) => c.isActive).length} active{q ? ` matching "${q}"` : ""}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Suspense>
             <GridSearch placeholder="Search classes…" basePath="/dashboard/classes" />
           </Suspense>
@@ -131,24 +131,26 @@ export default async function ClassesPage({
               <div className="border-b border-border px-6 py-4">
                 <h2 className="text-sm font-medium text-foreground">Weekly Schedule</h2>
               </div>
-              <div className="grid grid-cols-7 divide-x divide-border">
-                {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                  <div key={d} className="min-h-[100px] p-2">
-                    <p className={`mb-2 text-center text-xs font-semibold uppercase tracking-wide ${
-                      byDay[d]?.length ? "text-primary" : "text-muted-foreground"
-                    }`}>
-                      {DAYS[d]}
-                    </p>
-                    <div className="space-y-1">
-                      {(byDay[d] ?? []).filter((c) => c.isActive).map((cls) => (
-                        <div key={cls.id} className="rounded bg-secondary px-1.5 py-1 text-[10px] leading-tight">
-                          <p className="font-semibold text-primary truncate">{cls.title}</p>
-                          <p className="text-muted-foreground">{formatTime(cls.startTime)}</p>
-                        </div>
-                      ))}
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-7 divide-x divide-border min-w-[640px]">
+                  {[1, 2, 3, 4, 5, 6, 7].map((d) => (
+                    <div key={d} className="min-h-[100px] p-2">
+                      <p className={`mb-2 text-center text-xs font-semibold uppercase tracking-wide ${
+                        byDay[d]?.length ? "text-primary" : "text-muted-foreground"
+                      }`}>
+                        {DAYS[d]}
+                      </p>
+                      <div className="space-y-1">
+                        {(byDay[d] ?? []).filter((c) => c.isActive).map((cls) => (
+                          <div key={cls.id} className="rounded bg-secondary px-1.5 py-1 text-[10px] leading-tight">
+                            <p className="font-semibold text-primary truncate">{cls.title}</p>
+                            <p className="text-muted-foreground">{formatTime(cls.startTime)}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}

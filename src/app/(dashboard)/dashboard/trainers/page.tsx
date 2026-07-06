@@ -56,7 +56,7 @@ export default async function TrainersPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Trainers</h1>
           <p className="text-sm text-muted-foreground">
@@ -64,7 +64,7 @@ export default async function TrainersPage({
             {q ? ` matching "${q}"` : ""}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Suspense>
             <GridSearch placeholder="Search trainers…" basePath="/dashboard/trainers" />
           </Suspense>

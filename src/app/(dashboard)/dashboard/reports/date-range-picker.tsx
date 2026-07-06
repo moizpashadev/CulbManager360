@@ -31,8 +31,8 @@ export function DateRangePicker({ from, to }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex gap-1">
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap gap-1">
         {[
           { label: "This month", m: 1 },
           { label: "3 months", m: 3 },
@@ -48,7 +48,7 @@ export function DateRangePicker({ from, to }: Props) {
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <input
           type="date"
           value={f}

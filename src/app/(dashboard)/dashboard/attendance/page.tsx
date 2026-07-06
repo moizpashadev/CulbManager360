@@ -49,7 +49,7 @@ export default async function AttendancePage({
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Attendance</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">{displayDate}</p>
@@ -57,7 +57,7 @@ export default async function AttendancePage({
             <p className="mt-1 text-xs font-medium text-warning">Viewing past records</p>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <a
             href={`/api/attendance/export?from=${dateStr}&to=${dateStr}`}
             download

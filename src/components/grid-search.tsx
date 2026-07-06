@@ -37,7 +37,7 @@ export function GridSearch({ placeholder = "Search…", basePath, className }: P
   }
 
   return (
-    <div className={`relative ${className ?? ""}`}>
+    <div className={`relative w-full sm:w-auto ${className ?? ""}`}>
       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
       <input
         type="text"
@@ -45,7 +45,7 @@ export function GridSearch({ placeholder = "Search…", basePath, className }: P
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit(value)}
         placeholder={placeholder}
-        className="h-9 w-64 rounded-md border border-border bg-white pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-8 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-64"
       />
       {value && (
         <button

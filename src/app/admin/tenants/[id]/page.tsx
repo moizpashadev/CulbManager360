@@ -127,7 +127,7 @@ export default async function AdminTenantDetailPage({ params, searchParams }: Pr
 
       {/* Members section */}
       <div className="rounded-lg border border-border bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex flex-col gap-3 border-b border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-sm font-semibold text-foreground">Members</h2>
             <p className="text-xs text-muted-foreground">
@@ -136,13 +136,13 @@ export default async function AdminTenantDetailPage({ params, searchParams }: Pr
             </p>
           </div>
           {/* Search */}
-          <form method="GET" className="flex items-center gap-2">
+          <form method="GET" className="flex flex-wrap items-center gap-2">
             <input
               type="text"
               name="q"
               defaultValue={q ?? ""}
               placeholder="Search by name, email, phone…"
-              className="h-8 w-56 rounded-md border border-border bg-white px-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              className="h-8 w-full rounded-md border border-border bg-white px-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-56"
             />
             {status && <input type="hidden" name="status" value={status} />}
             <button

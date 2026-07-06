@@ -55,7 +55,7 @@ export default async function AdminMembersPage({ searchParams }: { searchParams:
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">All Members</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
@@ -64,13 +64,13 @@ export default async function AdminMembersPage({ searchParams }: { searchParams:
         </div>
 
         {/* Global search */}
-        <form method="GET" className="flex items-center gap-2">
+        <form method="GET" className="flex flex-wrap items-center gap-2">
           <input
             type="text"
             name="q"
             defaultValue={q ?? ""}
             placeholder="Search name, email, phone…"
-            className="h-9 w-64 rounded-md border border-border bg-white px-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-9 w-full rounded-md border border-border bg-white px-3 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-64"
           />
           {status && <input type="hidden" name="status" value={status} />}
           {tenantId && <input type="hidden" name="tenantId" value={tenantId} />}

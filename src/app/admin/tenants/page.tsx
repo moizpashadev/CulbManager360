@@ -28,7 +28,7 @@ export default async function TenantsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Gyms & Clubs</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">{tenants.length} registered gyms</p>

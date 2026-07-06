@@ -71,7 +71,7 @@ export default async function MembersPage({
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Members</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
@@ -80,7 +80,7 @@ export default async function MembersPage({
             {totalPages > 1 && ` · page ${page} of ${totalPages}`}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Suspense>
             <MembersSearch />
           </Suspense>

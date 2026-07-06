@@ -41,16 +41,16 @@ export default async function InvoiceReceiptPage({ params }: Props) {
   return (
     <div className="max-w-2xl">
       {/* Nav — hidden on print */}
-      <div className="mb-6 flex items-center justify-between print:hidden">
+      <div className="mb-6 flex flex-col gap-3 print:hidden sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/billing">
-            <button className="flex h-8 w-8 items-center justify-center rounded border border-border bg-white text-muted-foreground hover:text-foreground">
+            <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-border bg-white text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
             </button>
           </Link>
           <h1 className="text-xl font-semibold text-foreground">Invoice #{invoiceRef}</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <ReceiptActions
             memberName={invoice.member
               ? `${invoice.member.firstName} ${invoice.member.lastName}`
