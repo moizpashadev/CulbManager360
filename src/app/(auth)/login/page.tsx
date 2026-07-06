@@ -131,16 +131,35 @@ function DashboardContent({ phase }: { phase: number }) {
 
 /* ── browser window frame ── */
 function BrowserMockup({ phase }: { phase: number }) {
+  const [hoverTilt, setHoverTilt] = useState<{ x: number; y: number } | null>(null)
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const px = (e.clientX - rect.left) / rect.width - 0.5
+    const py = (e.clientY - rect.top) / rect.height - 0.5
+    setHoverTilt({ x: px, y: py })
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, delay: 0.4, ease: "easeOut" }}
       style={{ perspective: 1000 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setHoverTilt(null)}
     >
       <motion.div
-        animate={{ rotateX: [2, 1, 2], rotateY: [-3, -2, -3], y: [0, -5, 0] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        animate={
+          hoverTilt
+            ? { rotateX: hoverTilt.y * -18, rotateY: hoverTilt.x * 18, y: -8, scale: 1.02 }
+            : { rotateX: [2, 1, 2], rotateY: [-3, -2, -3], y: [0, -5, 0], scale: 1 }
+        }
+        transition={
+          hoverTilt
+            ? { type: "spring", stiffness: 220, damping: 20 }
+            : { duration: 9, repeat: Infinity, ease: "easeInOut" }
+        }
         style={{ transformStyle: "preserve-3d", position: "relative" }}
       >
         {/* shadow glow */}
