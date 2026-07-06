@@ -100,16 +100,16 @@ export default async function BranchDetailPage({ params }: Props) {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {[
           { label: "Members", value: branch.members.length },
           { label: "Trainers", value: trainers.length },
           { label: "Today's Check-ins", value: branch.attendance.length },
           { label: "Revenue This Month", value: `PKR ${revenueThisMonth.toLocaleString("en-PK")}`, mono: true },
         ].map(({ label, value, mono }) => (
-          <div key={label} className="rounded-lg border border-border bg-white px-5 py-4 shadow-sm">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-            <p className={`mt-1 text-2xl font-bold text-foreground ${mono ? "font-mono text-xl text-primary" : ""}`}>{value}</p>
+          <div key={label} className="rounded-lg border border-border bg-white px-3 py-4 shadow-sm sm:px-5">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-xs">{label}</p>
+            <p className={`mt-1 break-words text-lg font-bold leading-tight text-foreground sm:text-2xl ${mono ? "font-mono !text-base text-primary sm:!text-xl" : ""}`}>{value}</p>
           </div>
         ))}
       </div>

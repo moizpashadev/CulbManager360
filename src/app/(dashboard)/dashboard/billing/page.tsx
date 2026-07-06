@@ -126,18 +126,18 @@ export default async function BillingPage({ searchParams }: { searchParams: Sear
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border border-border bg-white px-6 py-5 shadow-sm">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="rounded-lg border border-border bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Revenue Collected</p>
-          <p className="mt-1 font-mono text-2xl font-bold text-primary">{fmt(totalRevenue)}</p>
+          <p className="mt-1 font-mono text-xl font-bold text-primary sm:text-2xl">{fmt(totalRevenue)}</p>
         </div>
-        <div className="rounded-lg border border-border bg-white px-6 py-5 shadow-sm">
+        <div className="rounded-lg border border-border bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pending Dues</p>
-          <p className="mt-1 font-mono text-2xl font-bold text-warning">{fmt(totalPending)}</p>
+          <p className="mt-1 font-mono text-xl font-bold text-warning sm:text-2xl">{fmt(totalPending)}</p>
         </div>
-        <div className="rounded-lg border border-border bg-white px-6 py-5 shadow-sm">
+        <div className="rounded-lg border border-border bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total Invoices</p>
-          <p className="mt-1 font-mono text-2xl font-bold text-foreground">{totalCount}</p>
+          <p className="mt-1 font-mono text-xl font-bold text-foreground sm:text-2xl">{totalCount}</p>
         </div>
       </div>
 

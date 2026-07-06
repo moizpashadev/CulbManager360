@@ -125,13 +125,8 @@ export default async function MemberProfilePage({ params, searchParams }: Props)
             </div>
           )}
 
-          {/* Edit form */}
-          <div className="rounded-lg border border-border bg-white shadow-sm">
-            <div className="border-b border-border px-6 py-4">
-              <h2 className="text-sm font-medium text-foreground">Member Details</h2>
-            </div>
-            <MemberEditForm member={member} branches={branches} />
-          </div>
+          {/* Member details — read-only profile view, toggles to an edit form */}
+          <MemberEditForm member={member} branches={branches} />
 
           {/* Membership */}
           <div className="rounded-lg border border-border bg-white shadow-sm">
