@@ -1,18 +1,30 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ImageResponse } from "next/og"
 import QRCode from "qrcode"
-import { readFileSync } from "fs"
-import path from "path"
 import { prisma } from "@/lib/db/prisma"
 
 export const runtime = "nodejs"
 
-const fontRegular = readFileSync(path.join(process.cwd(), "src/assets/fonts/DMSans-Regular.ttf"))
-const fontBold = readFileSync(path.join(process.cwd(), "src/assets/fonts/DMSans-Bold.ttf"))
+// Fonts are served from /public and fetched over HTTP rather than read from
+// disk: fs-based paths aren't reliably included in Vercel's serverless
+// function file tracing, and next/og's own bundled default-font loader
+// crashes on Windows dev (constructs a malformed file:// URL). Fetching a
+// static asset sidesteps both. Cached per warm lambda instance.
+let fontsPromise: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> | null = null
+
+function loadFonts(origin: string) {
+  if (!fontsPromise) {
+    fontsPromise = Promise.all([
+      fetch(`${origin}/fonts/DMSans-Regular.ttf`).then((r) => r.arrayBuffer()),
+      fetch(`${origin}/fonts/DMSans-Bold.ttf`).then((r) => r.arrayBuffer()),
+    ]).then(([regular, bold]) => ({ regular, bold }))
+  }
+  return fontsPromise
+}
 
 // No session check — same reasoning as /api/members/[id]/qr: this is
 // generated specifically to be sent to the member, who has no session.
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const member = await prisma.member.findUnique({
     where: { id: params.id },
     include: { tenant: { select: { name: true } } },
@@ -21,6 +33,7 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
 
   const qrDataUrl = await QRCode.toDataURL(`CM360:${member.id}`, { width: 500, margin: 1 })
   const refNumber = member.consumerNumber ?? member.id.slice(-8).toUpperCase()
+  const { regular, bold } = await loadFonts(request.nextUrl.origin)
 
   return new ImageResponse(
     (
@@ -100,8 +113,8 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
       width: 1020,
       height: 640,
       fonts: [
-        { name: "DM Sans", data: fontRegular, weight: 400, style: "normal" },
-        { name: "DM Sans", data: fontBold, weight: 700, style: "normal" },
+        { name: "DM Sans", data: regular, weight: 400, style: "normal" },
+        { name: "DM Sans", data: bold, weight: 700, style: "normal" },
       ],
     }
   )
