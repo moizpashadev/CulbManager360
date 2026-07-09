@@ -33,8 +33,15 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   const qrDataUrl = await QRCode.toDataURL(`CM360:${member.id}`, { width: 500, margin: 1 })
   const refNumber = member.consumerNumber ?? member.id.slice(-8).toUpperCase()
-  const { regular, bold } = await loadFonts(request.nextUrl.origin)
 
+  let regular: ArrayBuffer, bold: ArrayBuffer
+  try {
+    ;({ regular, bold } = await loadFonts(request.nextUrl.origin))
+  } catch (err) {
+    return NextResponse.json({ stage: "loadFonts", error: String(err), stack: err instanceof Error ? err.stack : null }, { status: 500 })
+  }
+
+  try {
   return new ImageResponse(
     (
       <div
@@ -118,4 +125,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       ],
     }
   )
+  } catch (err) {
+    return NextResponse.json({ stage: "ImageResponse", error: String(err), stack: err instanceof Error ? err.stack : null }, { status: 500 })
+  }
 }
