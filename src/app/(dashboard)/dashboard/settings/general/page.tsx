@@ -10,7 +10,7 @@ export default async function GeneralSettingsPage() {
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: session.tenantId },
-    select: { name: true, contactEmail: true, phone: true, address: true, moduleGym: true, moduleCourts: true },
+    select: { name: true, contactEmail: true, phone: true, whatsappNumber: true, address: true, moduleGym: true, moduleCourts: true },
   })
   if (!tenant) redirect("/dashboard")
 

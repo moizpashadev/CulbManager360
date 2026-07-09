@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth/session"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, HeartPulse } from "lucide-react"
 import { MemberEditForm } from "./member-edit-form"
+import { MemberQrButton } from "./member-qr-button"
 import { AssignPlanForm } from "./assign-plan-form"
 import { CancelMembershipButton } from "./cancel-membership-button"
 import { MembershipPauseButton } from "./membership-pause-button"
@@ -79,6 +80,7 @@ export default async function MemberProfilePage({ params, searchParams }: Props)
             <p className="font-mono text-sm text-muted-foreground">{member.email}</p>
           </div>
           <div className="flex items-center gap-3">
+              <MemberQrButton memberId={member.id} memberName={`${member.firstName} ${member.lastName}`} memberPhone={member.phone} />
               <Link
                 href={`/dashboard/members/${member.id}/health`}
                 className="flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
@@ -246,6 +248,7 @@ export default async function MemberProfilePage({ params, searchParams }: Props)
             </div>
             <dl className="divide-y divide-border">
               {[
+                { label: "Member ID", value: member.id, mono: true },
                 { label: "Joined", value: new Date(member.joinDate).toLocaleDateString("en-PK") },
                 { label: "Consumer #", value: member.consumerNumber ?? "—" },
                 { label: "Phone", value: member.phone ?? "—" },
@@ -262,10 +265,10 @@ export default async function MemberProfilePage({ params, searchParams }: Props)
                     ? `${member.emergencyContact}${member.emergencyPhone ? ` · ${member.emergencyPhone}` : ""}`
                     : "—",
                 },
-              ].map(({ label, value }) => (
+              ].map(({ label, value, mono }) => (
                 <div key={label} className="flex items-start justify-between gap-4 px-6 py-3">
                   <dt className="shrink-0 text-xs text-muted-foreground">{label}</dt>
-                  <dd className="text-right text-sm font-medium text-foreground">{value}</dd>
+                  <dd className={`text-right text-sm font-medium text-foreground ${mono ? "font-mono text-xs" : ""}`}>{value}</dd>
                 </div>
               ))}
               {member.medicalNotes && (

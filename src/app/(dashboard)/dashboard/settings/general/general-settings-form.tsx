@@ -8,6 +8,7 @@ type DefaultValues = {
   name: string
   contactEmail: string | null
   phone: string | null
+  whatsappNumber: string | null
   address: string | null
   moduleGym: boolean
   moduleCourts: boolean
@@ -20,6 +21,7 @@ export function GeneralSettingsForm({ defaultValues }: Props) {
   const [name, setName] = useState(defaultValues.name)
   const [contactEmail, setContactEmail] = useState(defaultValues.contactEmail ?? "")
   const [phone, setPhone] = useState(defaultValues.phone ?? "")
+  const [whatsappNumber, setWhatsappNumber] = useState(defaultValues.whatsappNumber ?? "")
   const [address, setAddress] = useState(defaultValues.address ?? "")
   const [moduleGym, setModuleGym] = useState(defaultValues.moduleGym)
   const [moduleCourts, setModuleCourts] = useState(defaultValues.moduleCourts)
@@ -40,7 +42,7 @@ export function GeneralSettingsForm({ defaultValues }: Props) {
     const res = await fetch("/api/settings/general", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, contactEmail, phone, address, moduleGym, moduleCourts }),
+      body: JSON.stringify({ name, contactEmail, phone, whatsappNumber, address, moduleGym, moduleCourts }),
     })
 
     setSaving(false)
@@ -92,6 +94,19 @@ export function GeneralSettingsForm({ defaultValues }: Props) {
                 className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-foreground">WhatsApp Number</label>
+            <input
+              type="tel"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              placeholder="0300-0000000"
+              className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Used to send membership cards and reminders to members via WhatsApp.
+            </p>
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-foreground">Address</label>

@@ -31,6 +31,7 @@ export default function NewTenantPage() {
         slug: formData.get("slug"),
         contactEmail: formData.get("contactEmail") || null,
         phone: formData.get("phone") || null,
+        whatsappNumber: formData.get("whatsappNumber") || null,
         address: formData.get("address") || null,
         ownerFirstName: formData.get("ownerFirstName"),
         ownerLastName: formData.get("ownerLastName"),
@@ -132,6 +133,19 @@ export default function NewTenantPage() {
                   className="block w-full rounded-md border border-border bg-white px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="whatsappNumber" className="block text-sm font-medium text-foreground">
+                WhatsApp Number
+              </label>
+              <input
+                id="whatsappNumber"
+                name="whatsappNumber"
+                placeholder="0300-0000000"
+                className="block w-full rounded-md border border-border bg-white px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <p className="text-xs text-muted-foreground">Used to send membership cards and reminders to members via WhatsApp.</p>
             </div>
 
             <div className="space-y-1.5">

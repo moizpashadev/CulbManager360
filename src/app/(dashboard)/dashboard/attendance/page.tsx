@@ -5,7 +5,8 @@ import { CheckInForm } from "./check-in-form"
 import { AttendanceLog } from "./attendance-log"
 import { AttendanceDateNav } from "./attendance-date-nav"
 import { Suspense } from "react"
-import { Download } from "lucide-react"
+import { Download, ScanLine } from "lucide-react"
+import Link from "next/link"
 
 async function getDateData(tenantId: string, dateStr: string) {
   const start = new Date(dateStr + "T00:00:00")
@@ -58,6 +59,13 @@ export default async function AttendancePage({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/dashboard/attendance/scan"
+            className="flex h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-medium text-white hover:bg-primary/90"
+          >
+            <ScanLine className="h-3.5 w-3.5" />
+            Scan Check-in
+          </Link>
           <a
             href={`/api/attendance/export?from=${dateStr}&to=${dateStr}`}
             download

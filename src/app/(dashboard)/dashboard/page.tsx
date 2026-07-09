@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { StatCard } from "@/components/stat-card"
+import { ScanWidget } from "@/components/scan-widget"
 
 function formatDate(d: Date) {
   return d.toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })
@@ -146,6 +147,14 @@ export default async function DashboardPage() {
           />
         )}
       </div>
+
+      {/* Scan check-in/out — kept open at reception all day */}
+      {session.moduleGym && (
+        <div className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">Scan Check-in / Check-out</h2>
+          <ScanWidget compact />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Expiring memberships */}

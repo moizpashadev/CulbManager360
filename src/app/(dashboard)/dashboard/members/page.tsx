@@ -153,6 +153,7 @@ export default async function MembersPage({
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>Member ID</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Consumer #</TableHead>
@@ -167,6 +168,7 @@ export default async function MembersPage({
                     <TableCell className="font-medium">
                       {member.firstName} {member.lastName}
                     </TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{member.id}</TableCell>
                     <TableCell className="font-mono text-sm">{member.email}</TableCell>
                     <TableCell>{member.phone ?? "—"}</TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">

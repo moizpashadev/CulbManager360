@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { gymName, slug, contactEmail, phone, address, ownerFirstName, ownerLastName, ownerEmail, ownerPassword, moduleGym, moduleCourts } = body
+  const { gymName, slug, contactEmail, phone, whatsappNumber, address, ownerFirstName, ownerLastName, ownerEmail, ownerPassword, moduleGym, moduleCourts } = body
 
   if (!gymName || !slug || !ownerFirstName || !ownerLastName || !ownerEmail || !ownerPassword) {
     return NextResponse.json({ error: "All required fields must be filled" }, { status: 400 })
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
           slug,
           contactEmail: contactEmail ?? null,
           phone: phone ?? null,
+          whatsappNumber: whatsappNumber ?? null,
           address: address ?? null,
           moduleGym: moduleGym !== false,
           moduleCourts: moduleCourts === true,

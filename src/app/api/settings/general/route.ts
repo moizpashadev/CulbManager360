@@ -10,7 +10,7 @@ export async function GET() {
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: session.tenantId },
-    select: { id: true, name: true, moduleGym: true, moduleCourts: true, contactEmail: true, phone: true, address: true },
+    select: { id: true, name: true, moduleGym: true, moduleCourts: true, contactEmail: true, phone: true, whatsappNumber: true, address: true },
   })
   if (!tenant) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json(tenant)
@@ -26,7 +26,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { moduleGym, moduleCourts, name, contactEmail, phone, address } = body
+  const { moduleGym, moduleCourts, name, contactEmail, phone, whatsappNumber, address } = body
 
   // At least one module must stay enabled
   if (moduleGym === false && moduleCourts === false) {
@@ -41,9 +41,10 @@ export async function PATCH(request: NextRequest) {
       ...(name && { name: (name as string).trim() }),
       ...(contactEmail !== undefined && { contactEmail: contactEmail || null }),
       ...(phone !== undefined && { phone: phone || null }),
+      ...(whatsappNumber !== undefined && { whatsappNumber: whatsappNumber || null }),
       ...(address !== undefined && { address: address || null }),
     },
-    select: { id: true, name: true, moduleGym: true, moduleCourts: true, contactEmail: true, phone: true, address: true },
+    select: { id: true, name: true, moduleGym: true, moduleCourts: true, contactEmail: true, phone: true, whatsappNumber: true, address: true },
   })
   return NextResponse.json(updated)
 }

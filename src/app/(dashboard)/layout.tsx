@@ -4,13 +4,14 @@ import { Sidebar } from "@/components/sidebar"
 import { Topbar } from "@/components/topbar"
 import { CommandPalette } from "@/components/command-palette"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { ScanProvider } from "@/components/scan-provider"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession()
   if (!session) redirect("/login")
   if (session.tenantId === "__super__") redirect("/admin")
 
-  return (
+  const content = (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <Topbar
         userName={`${session.firstName} ${session.lastName}`}
@@ -25,4 +26,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <CommandPalette />
     </div>
   )
+
+  // QR scan-to-check-in listens globally for scanner input across every
+  // dashboard page — only relevant when the gym module is on.
+  return session.moduleGym ? <ScanProvider>{content}</ScanProvider> : content
 }

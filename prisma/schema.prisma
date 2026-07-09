@@ -87,6 +87,7 @@ model Tenant {
   logoUrl      String?
   contactEmail String?
   phone        String?
+  whatsappNumber String?
   address      String?
   isActive              Boolean  @default(true)
   kuickpayInstitutionId String?
