@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ImageResponse } from "next/og"
-import QRCode from "qrcode"
-import { prisma } from "@/lib/db/prisma"
 
-export const runtime = "nodejs"
+// Edge runtime — this is next/og's primary, well-tested code path (its
+// Node.js runtime bundle has been unreliable for us). Prisma can't run here,
+// so member/QR data comes from the Node-runtime /card-data route instead.
+export const runtime = "edge"
 
-// Fonts are served from /public and fetched over HTTP rather than read from
-// disk: fs-based paths aren't reliably included in Vercel's serverless
-// function file tracing, and next/og's own bundled default-font loader
-// crashes on Windows dev (constructs a malformed file:// URL). Fetching a
-// static asset sidesteps both. Cached per warm lambda instance.
 let fontsPromise: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> | null = null
 
 function loadFonts(origin: string) {
@@ -22,32 +18,25 @@ function loadFonts(origin: string) {
   return fontsPromise
 }
 
-// No session check — same reasoning as /api/members/[id]/qr: this is
-// generated specifically to be sent to the member, who has no session.
+// No session check — this image is generated specifically to be handed to
+// the member, who by definition has no dashboard session.
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const member = await prisma.member.findUnique({
-    where: { id: params.id },
-    include: { tenant: { select: { name: true } } },
-  })
-  if (!member) return NextResponse.json({ error: "Member not found" }, { status: 404 })
+  const origin = request.nextUrl.origin
 
-  const qrDataUrl = await QRCode.toDataURL(`CM360:${member.id}`, { width: 500, margin: 1 })
-  const refNumber = member.consumerNumber ?? member.id.slice(-8).toUpperCase()
-
-  let regular: ArrayBuffer, bold: ArrayBuffer
-  try {
-    ;({ regular, bold } = await loadFonts(request.nextUrl.origin))
-  } catch (err) {
-    return NextResponse.json({ stage: "loadFonts", error: String(err), stack: err instanceof Error ? err.stack : null }, { status: 500 })
+  const dataRes = await fetch(`${origin}/api/members/${params.id}/card-data`)
+  if (!dataRes.ok) {
+    const body = await dataRes.json().catch(() => ({}))
+    return NextResponse.json(body, { status: dataRes.status })
   }
+  const { memberName, tenantName, refNumber, qrDataUrl } = await dataRes.json()
+  const { regular, bold } = await loadFonts(origin)
 
-  try {
   return new ImageResponse(
     (
       <div
         style={{
-          width: "1020px",
-          height: "640px",
+          width: "640px",
+          height: "1024px",
           display: "flex",
           flexDirection: "column",
           background: "#ffffff",
@@ -57,22 +46,23 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           fontFamily: "DM Sans",
         }}
       >
-        {/* Header strip */}
+        {/* Header — gym branding */}
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            gap: "16px",
+            gap: "14px",
             background: "#0a8f5c",
-            padding: "28px 40px",
+            padding: "48px 32px 40px",
           }}
         >
           <div
             style={{
               display: "flex",
-              width: "56px",
-              height: "56px",
-              borderRadius: "14px",
+              width: "72px",
+              height: "72px",
+              borderRadius: "18px",
               background: "rgba(255,255,255,0.15)",
               alignItems: "center",
               justifyContent: "center",
@@ -81,51 +71,61 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             <div
               style={{
                 display: "flex",
-                width: "22px",
-                height: "22px",
-                borderRadius: "6px",
-                border: "4px solid #ffffff",
+                width: "28px",
+                height: "28px",
+                borderRadius: "8px",
+                border: "5px solid #ffffff",
               }}
             />
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: "34px", fontWeight: 700, color: "#ffffff" }}>{member.tenant.name}</div>
-            <div style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "3px", color: "rgba(255,255,255,0.75)" }}>
-              CLUB MANAGER 360
-            </div>
+          <div style={{ fontSize: "30px", fontWeight: 700, color: "#ffffff", textAlign: "center" }}>{tenantName}</div>
+          <div style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "3px", color: "rgba(255,255,255,0.75)" }}>
+            CLUB MANAGER 360
           </div>
         </div>
 
         {/* Body */}
-        <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between", padding: "32px 40px" }}>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontSize: "18px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a" }}>MEMBER</div>
-            <div style={{ fontSize: "44px", fontWeight: 700, color: "#1a1a1a", marginTop: "4px" }}>
-              {member.firstName} {member.lastName}
-            </div>
-            <div style={{ fontSize: "18px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a", marginTop: "28px" }}>
-              MEMBER ID
-            </div>
-            <div style={{ fontSize: "28px", fontWeight: 700, color: "#0a8f5c", marginTop: "2px" }}>{refNumber}</div>
-            <div style={{ fontSize: "16px", fontWeight: 400, color: "#8a8a8a", marginTop: "24px" }}>
-              Scan at the front desk to check in / check out
-            </div>
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "40px 32px",
+          }}
+        >
+          <div style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a" }}>MEMBER</div>
+          <div style={{ fontSize: "36px", fontWeight: 700, color: "#1a1a1a", marginTop: "6px", textAlign: "center" }}>
+            {memberName}
           </div>
+          <div style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a", marginTop: "22px" }}>
+            MEMBER ID
+          </div>
+          <div style={{ fontSize: "24px", fontWeight: 700, color: "#0a8f5c", marginTop: "2px" }}>{refNumber}</div>
+
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrDataUrl} width={280} height={280} style={{ borderRadius: "16px", border: "2px solid #e0e0e0" }} alt="" />
+          <img
+            src={qrDataUrl}
+            width={340}
+            height={340}
+            style={{ marginTop: "40px", borderRadius: "20px", border: "2px solid #e0e0e0" }}
+            alt=""
+          />
+
+          <div style={{ fontSize: "15px", fontWeight: 400, color: "#8a8a8a", marginTop: "28px", textAlign: "center" }}>
+            Scan at the front desk to check in / check out
+          </div>
         </div>
       </div>
     ),
     {
-      width: 1020,
-      height: 640,
+      width: 640,
+      height: 1024,
       fonts: [
         { name: "DM Sans", data: regular, weight: 400, style: "normal" },
         { name: "DM Sans", data: bold, weight: 700, style: "normal" },
       ],
     }
   )
-  } catch (err) {
-    return NextResponse.json({ stage: "ImageResponse", error: String(err), stack: err instanceof Error ? err.stack : null }, { status: 500 })
-  }
 }

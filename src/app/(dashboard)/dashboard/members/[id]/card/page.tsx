@@ -39,7 +39,7 @@ export default async function MemberCardPage({ params }: Props) {
         <img
           src={imagePath}
           alt={`Membership card for ${memberName}`}
-          className="w-full max-w-xl rounded-2xl border border-border shadow-lg"
+          className="w-full max-w-xs rounded-2xl border border-border shadow-lg"
         />
         <CardActions memberName={memberName} memberPhone={member.phone} imagePath={imagePath} />
       </div>
