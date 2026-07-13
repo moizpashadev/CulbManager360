@@ -7,6 +7,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  async rewrites() {
+    return [{ source: "/presentation", destination: "/presentation.html" }];
+  },
 };
 
 export default nextConfig;
