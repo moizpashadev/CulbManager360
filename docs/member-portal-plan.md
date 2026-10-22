@@ -63,11 +63,12 @@ Update the checkboxes as work lands. Keep "Last updated" current.
 - [x] `resend` npm package installed
 - [ ] ~~Google OAuth signup/login~~ — deferred, see scope decision above
 - [ ] ~~Facebook OAuth signup/login~~ — deferred, see scope decision above
-- [ ] OTP send endpoint (generate code, hash it into `MemberOtp`, email via Resend, rate-limit)
-- [ ] OTP verify endpoint (check code, issue member session)
+- [x] OTP send endpoint — `POST /api/member/auth/send-otp` (6-digit code, bcrypt-hashed into `MemberOtp`, emailed via Resend, 60s resend cooldown + 5/hour cap, both enforced via DB lookups)
+- [x] OTP verify endpoint — `POST /api/member/auth/verify-otp` (checks code, marks OTP consumed so it can't be replayed, upserts `MemberAccount` — first successful verify doubles as signup — issues member session)
+- [x] Member-side session/auth — `src/lib/member-auth/{jwt,session,otp,send-otp-email}.ts`, separate cookie `cm360_member_token` (distinct from staff `cm360_token`), same JWT_SECRET but distinct payload shape/verify function so the two can never be confused
+- [x] Tested live: real email delivery confirmed, cooldown/rate-limit, wrong-code rejection, replay-after-consumption rejection, invalid-email-format rejection, and the full success path (session issued, account not duplicated on re-verify) — all tested against the real endpoints, not just unit logic
 - [ ] Invite flow: gym owner/admin invites a `Member` by email → auto-match to existing `MemberAccount` if one exists (creates `MemberGymLink`), else prompts first-time OTP signup
-- [ ] Member-side session/auth (separate cookie/JWT scope from staff `cm360_token`)
-- [ ] New route group, e.g. `src/app/(member)/portal/*`, isolated from `/dashboard`
+- [ ] New route group, e.g. `src/app/(member)/portal/*`, isolated from `/dashboard` — **note: no actual portal pages exist yet**, `verify-otp` currently redirects to `/portal` which doesn't exist as a route yet
 - [ ] Read-only: own profile, invoices/payment status, attendance history, health/progress reports
 - [ ] Multi-gym history view (joined/left dates per gym, from `MemberGymLink`)
 
