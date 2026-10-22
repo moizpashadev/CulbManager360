@@ -12,7 +12,8 @@ const statusColors: Record<string, "success" | "secondary" | "warning" | "destru
 
 const STATUS_FILTERS = ["ACTIVE", "INACTIVE", "EXPIRED", "SUSPENDED"]
 
-export default async function AdminMembersPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function AdminMembersPage(props: { searchParams: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const { q, status, tenantId } = searchParams
 
   const where: Record<string, unknown> = {}

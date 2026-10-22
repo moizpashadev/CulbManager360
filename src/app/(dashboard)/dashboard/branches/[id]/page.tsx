@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, MapPin, Phone, Mail } from "lucide-react"
 import { BranchEditForm } from "./branch-edit-form"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
 const employmentLabel: Record<string, string> = {
   SALARIED: "Salaried",
@@ -14,14 +14,15 @@ const employmentLabel: Record<string, string> = {
   SELF_EMPLOYED: "Self-Employed",
 }
 
-export default async function BranchDetailPage({ params }: Props) {
+export default async function BranchDetailPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1)
+  const today = new Date();today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today);tomorrow.setDate(tomorrow.getDate() + 1)
 
   const branch = await prisma.branch.findFirst({
     where: { id: params.id, tenantId: session.tenantId },

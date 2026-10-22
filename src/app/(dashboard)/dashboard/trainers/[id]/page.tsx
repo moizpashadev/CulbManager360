@@ -13,7 +13,7 @@ import {
 } from "./trainer-actions"
 import { TrainerEditForm } from "./trainer-edit-form"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -30,14 +30,15 @@ function fmt(n: number) {
   return `PKR ${n.toLocaleString("en-PK")}`
 }
 
-export default async function TrainerDashboardPage({ params }: Props) {
+export default async function TrainerDashboardPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1)
+  const today = new Date();today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today);tomorrow.setDate(tomorrow.getDate() + 1)
   const todayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1 // 0=Mon
 
   const branches = await prisma.branch.findMany({

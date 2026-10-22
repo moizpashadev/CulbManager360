@@ -10,11 +10,12 @@ import { PlanActions } from "./plan-actions"
 import { GridSearch } from "@/components/grid-search"
 import { Suspense } from "react"
 
-export default async function PlansPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; status?: string }
-}) {
+export default async function PlansPage(
+  props: {
+    searchParams: Promise<{ q?: string; status?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

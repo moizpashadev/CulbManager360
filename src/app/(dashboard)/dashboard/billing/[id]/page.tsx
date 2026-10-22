@@ -7,7 +7,7 @@ import { ArrowLeft, Smartphone } from "lucide-react"
 import { MarkPaidButton } from "../mark-paid-button"
 import { ReceiptActions } from "./receipt-actions"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
 const paymentColors: Record<string, "success" | "warning" | "secondary"> = {
   PAID: "success", PENDING: "warning", PARTIAL: "warning", WAIVED: "secondary",
@@ -17,7 +17,8 @@ function fmt(n: unknown) {
   return `PKR ${Number(n).toLocaleString("en-PK")}`
 }
 
-export default async function InvoiceReceiptPage({ params }: Props) {
+export default async function InvoiceReceiptPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 
@@ -263,5 +264,5 @@ export default async function InvoiceReceiptPage({ params }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }

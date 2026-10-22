@@ -29,7 +29,8 @@ function fmt(n: unknown) {
   return `PKR ${Number(n).toLocaleString("en-PK")}`
 }
 
-export default async function BillingPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function BillingPage(props: { searchParams: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

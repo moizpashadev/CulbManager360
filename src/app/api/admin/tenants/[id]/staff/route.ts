@@ -5,7 +5,8 @@ import { hashPassword } from "@/lib/auth/password"
 
 const VALID_ROLES = ["OWNER", "ADMIN", "MANAGER", "STAFF", "TRAINER"]
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role !== "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

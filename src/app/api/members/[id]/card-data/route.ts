@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db/prisma"
 // Node.js-runtime route: Prisma needs Node (not Edge). Returns plain JSON so
 // the Edge-runtime card-image route can render the PNG without needing
 // Prisma itself.
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const member = await prisma.member.findUnique({
     where: { id: params.id },
     include: { tenant: { select: { name: true } } },

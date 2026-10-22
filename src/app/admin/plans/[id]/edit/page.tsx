@@ -4,7 +4,8 @@ import { ArrowLeft } from "lucide-react"
 import { prisma } from "@/lib/db/prisma"
 import { PlanForm } from "../../plan-form"
 
-export default async function EditPlanPage({ params }: { params: { id: string } }) {
+export default async function EditPlanPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const plan = await prisma.platformPlan.findUnique({ where: { id: params.id } })
   if (!plan) notFound()
 

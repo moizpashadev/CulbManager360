@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 
-type Params = { params: { slug: string } }
+type Params = { params: Promise<{ slug: string }> }
 
 function parseTranDateTime(tran_date: string, tran_time: string): Date {
   // tran_date: YYYYMMDD, tran_time: HHMMSS
@@ -14,7 +14,8 @@ function parseTranDateTime(tran_date: string, tran_time: string): Date {
   return new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}Z`)
 }
 
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, props: Params) {
+  const params = await props.params;
   try {
     const body = await req.json()
     const { consumer_number, bank_mnemonic, tran_auth_id, paid_amount, tran_date, tran_time, reserved } =

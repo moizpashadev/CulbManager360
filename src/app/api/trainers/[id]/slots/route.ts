@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(_req: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -22,7 +23,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
   return NextResponse.json(slots)
 }
 
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(request: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

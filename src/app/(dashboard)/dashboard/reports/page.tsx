@@ -101,11 +101,12 @@ function daysUntil(date: Date | string) {
   return Math.ceil((new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-export default async function ReportsPage({
-  searchParams,
-}: {
-  searchParams: { from?: string; to?: string; expiry?: string }
-}) {
+export default async function ReportsPage(
+  props: {
+    searchParams: Promise<{ from?: string; to?: string; expiry?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

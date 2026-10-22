@@ -20,11 +20,12 @@ const ROLE_COLORS: Record<string, "success" | "secondary" | "warning" | "destruc
 
 const ROLES = ["OWNER", "ADMIN", "MANAGER", "STAFF", "TRAINER"]
 
-export default async function StaffPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; role?: string }
-}) {
+export default async function StaffPage(
+  props: {
+    searchParams: Promise<{ q?: string; role?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

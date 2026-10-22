@@ -13,11 +13,12 @@ const employmentBadge: Record<string, "success" | "warning" | "secondary"> = {
   SELF_EMPLOYED: "secondary",
 }
 
-export default async function TrainersPage({
-  searchParams,
-}: {
-  searchParams: { q?: string }
-}) {
+export default async function TrainersPage(
+  props: {
+    searchParams: Promise<{ q?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 
@@ -33,7 +34,7 @@ export default async function TrainersPage({
     ]
   }
 
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date();today.setHours(0, 0, 0, 0)
   const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
 
   const trainers = await prisma.staff.findMany({

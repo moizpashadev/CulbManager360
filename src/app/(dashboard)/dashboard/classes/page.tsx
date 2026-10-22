@@ -19,11 +19,12 @@ function formatTime(t: string) {
   return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`
 }
 
-export default async function ClassesPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; day?: string }
-}) {
+export default async function ClassesPage(
+  props: {
+    searchParams: Promise<{ q?: string; day?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

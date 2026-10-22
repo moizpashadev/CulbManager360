@@ -6,14 +6,14 @@ import { Badge } from "@/components/ui/badge"
 import { PaymentExportButton } from "./payment-export-button"
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     from?: string
     to?: string
     method?: string
     type?: string
     status?: string
     page?: string
-  }
+  }>
 }
 
 const PAGE_SIZE = 50
@@ -57,7 +57,8 @@ function fmtTime(d: Date | null | undefined) {
   return new Date(d).toLocaleTimeString("en-PK", { hour: "2-digit", minute: "2-digit", hour12: true })
 }
 
-export default async function PaymentReportsPage({ searchParams }: Props) {
+export default async function PaymentReportsPage(props: Props) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
   if (!["OWNER", "ADMIN", "MANAGER"].includes(session.role)) redirect("/dashboard")

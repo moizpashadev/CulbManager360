@@ -5,9 +5,10 @@ import { getSession } from "@/lib/auth/session"
 import { ArrowLeft } from "lucide-react"
 import { CardActions } from "./card-actions"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
-export default async function MemberCardPage({ params }: Props) {
+export default async function MemberCardPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 

@@ -11,7 +11,7 @@ import { CancelMembershipButton } from "./cancel-membership-button"
 import { MembershipPauseButton } from "./membership-pause-button"
 import { GenerateInvoiceButton } from "./generate-invoice-button"
 
-type Props = { params: { id: string }; searchParams: { assign?: string } }
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ assign?: string }> }
 
 const statusColors: Record<string, "success" | "destructive" | "warning" | "secondary"> = {
   ACTIVE: "success", INACTIVE: "secondary", SUSPENDED: "destructive", EXPIRED: "warning", PAUSED: "warning",
@@ -24,7 +24,9 @@ function fmt(n: unknown) {
   return `PKR ${Number(n).toLocaleString("en-PK")}`
 }
 
-export default async function MemberProfilePage({ params, searchParams }: Props) {
+export default async function MemberProfilePage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 
@@ -311,5 +313,5 @@ export default async function MemberProfilePage({ params, searchParams }: Props)
         </div>
       </div>
     </div>
-  )
+  );
 }

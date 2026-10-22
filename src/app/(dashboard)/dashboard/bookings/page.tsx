@@ -3,11 +3,12 @@ import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 import { BookingGrid } from "./booking-grid"
 
-export default async function BookingsPage({
-  searchParams,
-}: {
-  searchParams: { date?: string }
-}) {
+export default async function BookingsPage(
+  props: {
+    searchParams: Promise<{ date?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

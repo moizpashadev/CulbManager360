@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(_req: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -12,8 +13,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1)
+  const today = new Date();today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today);tomorrow.setDate(tomorrow.getDate() + 1)
 
   const trainer = await prisma.staff.findFirst({
     where: { id: params.id, tenantId: session.tenantId, role: "TRAINER" },
@@ -82,7 +83,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
   return NextResponse.json({ ...trainer, earningsThisMonth, todayAttendance: todayAttendance ?? null })
 }
 
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(request: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

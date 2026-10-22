@@ -19,11 +19,12 @@ const statusColors: Record<string, "success" | "destructive" | "warning" | "seco
   EXPIRED: "warning",
 }
 
-export default async function MembersPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; status?: string; page?: string }
-}) {
+export default async function MembersPage(
+  props: {
+    searchParams: Promise<{ q?: string; status?: string; page?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

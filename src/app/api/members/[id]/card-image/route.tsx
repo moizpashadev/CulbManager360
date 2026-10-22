@@ -20,7 +20,8 @@ function loadFonts(origin: string) {
 
 // No session check — this image is generated specifically to be handed to
 // the member, who by definition has no dashboard session.
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const origin = request.nextUrl.origin
 
   const dataRes = await fetch(`${origin}/api/members/${params.id}/card-data`)

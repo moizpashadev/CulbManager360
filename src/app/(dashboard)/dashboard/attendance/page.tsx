@@ -29,11 +29,12 @@ async function getDateData(tenantId: string, dateStr: string) {
   return { members, log }
 }
 
-export default async function AttendancePage({
-  searchParams,
-}: {
-  searchParams: { date?: string }
-}) {
+export default async function AttendancePage(
+  props: {
+    searchParams: Promise<{ date?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getSession()
   if (!session) redirect("/login")
 

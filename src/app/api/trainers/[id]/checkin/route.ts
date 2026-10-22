@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 // POST = check in
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(request: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   if (!branch) return NextResponse.json({ error: "Branch not found" }, { status: 404 })
 
   // Check already checked in today
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date();today.setHours(0, 0, 0, 0)
   const existing = await prisma.trainerAttendance.findFirst({
     where: { trainerId: params.id, tenantId: session.tenantId, checkedInAt: { gte: today }, checkedOutAt: null },
   })
@@ -49,13 +50,14 @@ export async function POST(request: NextRequest, { params }: Params) {
 }
 
 // PATCH = check out
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(request: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date();today.setHours(0, 0, 0, 0)
   const openRecord = await prisma.trainerAttendance.findFirst({
     where: {
       trainerId: params.id,

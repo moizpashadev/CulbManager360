@@ -5,9 +5,10 @@ import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 import { StaffEditForm } from "./staff-edit-form"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
-export default async function EditStaffPage({ params }: Props) {
+export default async function EditStaffPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
   if (!["OWNER", "ADMIN"].includes(session.role)) redirect("/dashboard/staff")

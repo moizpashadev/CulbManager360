@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 // PUT /api/attendance/:id — record check-out time
-export async function PUT(_req: NextRequest, { params }: Params) {
+export async function PUT(_req: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

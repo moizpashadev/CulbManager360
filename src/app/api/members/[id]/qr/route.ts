@@ -6,7 +6,8 @@ import { prisma } from "@/lib/db/prisma"
 // themselves (WhatsApp share, printed card), who by definition has no
 // dashboard session. It only encodes the member's own ID, which enables
 // nothing beyond what a front-desk scan (itself staff-authenticated) allows.
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const member = await prisma.member.findUnique({
     where: { id: params.id },
     select: { id: true },

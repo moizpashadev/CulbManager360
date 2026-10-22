@@ -7,7 +7,7 @@ import { ArrowLeft, Building2, Users, UserCog, CreditCard, MapPin } from "lucide
 import { SubscriptionForm } from "./subscription-form"
 import { AddStaffForm } from "./add-staff-form"
 
-type Props = { params: { id: string }; searchParams: { q?: string; status?: string } }
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ q?: string; status?: string }> }
 
 function fmt(n: unknown) {
   return `PKR ${Number(n).toLocaleString("en-PK")}`
@@ -17,7 +17,9 @@ const memberStatusColors: Record<string, "success" | "secondary" | "warning" | "
   ACTIVE: "success", INACTIVE: "secondary", EXPIRED: "warning", SUSPENDED: "destructive",
 }
 
-export default async function AdminTenantDetailPage({ params, searchParams }: Props) {
+export default async function AdminTenantDetailPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { q, status } = searchParams
 
   const now = new Date()

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 
-type Params = { params: { slug: string } }
+type Params = { params: Promise<{ slug: string }> }
 
 function yyyymmdd(date: Date): string {
   const y = date.getFullYear()
@@ -24,7 +24,8 @@ function endOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59)
 }
 
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, props: Params) {
+  const params = await props.params;
   try {
     const body = await req.json()
     const { consumer_number, reserved } = body as {

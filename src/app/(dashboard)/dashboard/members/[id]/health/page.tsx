@@ -6,7 +6,7 @@ import { getSession } from "@/lib/auth/session"
 import { HealthProfileForm } from "./health-profile-form"
 import { ProgressLog } from "./progress-log"
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
 const GOAL_LABELS: Record<string, string> = {
   WEIGHT_LOSS: "Weight Loss",
@@ -17,7 +17,8 @@ const GOAL_LABELS: Record<string, string> = {
   FLEXIBILITY: "Flexibility",
 }
 
-export default async function MemberHealthPage({ params }: Props) {
+export default async function MemberHealthPage(props: Props) {
+  const params = await props.params;
   const session = await getSession()
   if (!session) redirect("/login")
 

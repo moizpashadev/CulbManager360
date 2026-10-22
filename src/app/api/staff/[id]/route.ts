@@ -3,9 +3,10 @@ import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
 import { hashPassword } from "@/lib/auth/password"
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(request: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -57,7 +58,8 @@ export async function PUT(request: NextRequest, { params }: Params) {
   return NextResponse.json(updated)
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(_req: NextRequest, props: Params) {
+  const params = await props.params;
   const session = await getSession()
   if (!session || session.role === "SUPER_ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
