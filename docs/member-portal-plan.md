@@ -1,6 +1,6 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 1 complete
+**Status:** Sprint 2 complete
 **Last updated:** 2026-10-22
 
 **Scope decision (2026-10-22):** Google/Facebook OAuth signup is **deferred** — not required to deliver core value (gym members logging in to see their own data). Sprint 1 ships with **invite + email OTP only**. OAuth moves to a later/optional addition once there's reason to prioritize the standalone-signup growth loop. See section 5.
@@ -71,14 +71,16 @@ Update the checkboxes as work lands. Keep "Last updated" current.
 - [x] New route group — `src/app/(member)/member-login` (public, two-step email → OTP form) and `src/app/(member)/portal` (protected landing page, shows linked gyms or an empty-state prompt). `src/middleware.ts` extended to gate `/portal/:path*` on the member session and bounce authenticated members away from `/member-login`, fully separate from the existing staff auth branch.
 - [x] `GET /api/member/me` and `POST /api/member/auth/logout` added to support the portal UI
 - [x] Tested live end-to-end: unauthenticated `/portal` → redirects to `/member-login`; login → session issued → `/portal` renders correctly (empty-gyms state verified); authenticated `/member-login` → redirects to `/portal`; logout clears the cookie. Full production build (`npm run build`) also verified clean.
-- [ ] Read-only: own profile, invoices/payment status, attendance history, health/progress reports
-- [ ] Multi-gym history view (joined/left dates per gym, from `MemberGymLink`)
+- [x] Read-only: invoices/payment status (`/portal/invoices`). Multi-gym history view is the landing page (`/portal`) itself — already showed joined/left dates per gym since Sprint 1.
+- [ ] Attendance history, trainer-authored health/progress reports — not built (deprioritized in favor of the self-service actions below, which were the bigger ask)
 
-### Sprint 2 — Self-Service Actions
-- [ ] Pay invoice in-app via KuickPay
-- [ ] Book a class
-- [ ] Book a court slot
-- [ ] Self-log weekly measurements/weight (writes `ProgressEntry`)
+### Sprint 2 — Self-Service Actions — ✅ complete (2026-10-22)
+- [x] **"Pay invoice in-app" — important nuance**: KuickPay BPS has no in-app checkout. Payment happens on the member's *own bank's* ATM/app/branch using a consumer number; the bank then calls our existing webhook. So `/portal/invoices` shows each unpaid invoice with clear instructions (amount + consumer number) rather than a "Pay Now" button — that's the correct behavior for how this payment system actually works, not a missing feature.
+- [x] Book a class — `GET /api/member/classes`, `POST /api/member/classes/[id]/book`, `/portal/classes`. Mirrors the exact capacity-check logic from the staff-side route. Member's tenant-scoped `Member.id` is resolved server-side from their `MemberGymLink` — never trusts a client-supplied memberId.
+- [x] Book a court slot — `GET /api/member/courts`, `POST /api/member/courts/[id]/book`, `/portal/courts`. Mirrors the staff-side conflict-check + invoice-creation (with KuickPay consumer number) logic.
+- [x] Self-log weekly measurements/weight — `GET`/`POST /api/member/progress`, `/portal/progress`. **No schema change was needed** — `ProgressEntry.memberId`/`tenantId` were already required fields a gym-linked member already has via their `MemberGymLink`; entries are created with `trainerId: null` to mark them self-logged vs. trainer-authored. Standalone (no-gym) progress tracking is still out of scope — a member needs at least one active gym link to log anything, consistent with the Sprint 1 note above.
+- [x] Portal nav updated (`MemberPortalTopbar`) with links to all 4 new pages.
+- [x] Tested live end-to-end against real seeded data: invited a real member, logged in, verified GET on all 4 new endpoints/pages returns real data, then actually booked a class and a court slot and logged a progress entry — confirmed correct data in DB, correct invoice + KuickPay consumer number generated for the court booking, and confirmed duplicate-booking and time-conflict rejection both correctly return 409. Full lint + production build clean.
 
 ### Sprint 3 — Engagement Layer
 - [ ] Push notifications (service worker, VAPID keys, reminder triggers — class reminders, payment due, attendance streaks)
