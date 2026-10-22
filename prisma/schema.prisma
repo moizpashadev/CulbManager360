@@ -117,6 +117,7 @@ model Tenant {
   courts            Court[]
   slotBookings      SlotBooking[]
   memberGymLinks    MemberGymLink[]
+  memberJoinRequests MemberJoinRequest[]
   platformPlan      PlatformPlan?       @relation(fields: [platformPlanId], references: [id])
 }
 
@@ -196,19 +197,72 @@ enum MemberStatus {
 // while keeping one account and a history of gym memberships.
 
 model MemberAccount {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  oauthGoogleId String?  @unique
-  oauthFbId     String?  @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  email                String   @unique
+  oauthGoogleId        String?  @unique
+  oauthFbId            String?  @unique
+  referredByAccountId  String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  gymLinks        MemberGymLink[]
+  gymLinks     MemberGymLink[]
+  joinRequests MemberJoinRequest[]
+  pushSubscriptions MemberPushSubscription[]
+  referredBy   MemberAccount?  @relation("Referrals", fields: [referredByAccountId], references: [id], onDelete: SetNull)
+  referrals    MemberAccount[] @relation("Referrals")
   // Note: self-logged ProgressEntry support (standalone + gym-linked) is
   // Sprint 2 work — will need ProgressEntry.accountId added then.
 
   @@index([oauthGoogleId])
   @@index([oauthFbId])
+  @@index([referredByAccountId])
+}
+
+// ─── MEMBER JOIN REQUEST (standalone user requests to join a gym) ──────────
+// Member searches/finds a gym and asks to be added — staff reviews and
+// approves/rejects, keeping gyms in control of who becomes a real Member
+// rather than allowing open self-registration.
+
+model MemberJoinRequest {
+  id         String                  @id @default(cuid())
+  accountId  String
+  tenantId   String
+  firstName  String
+  lastName   String
+  phone      String?
+  message    String?
+  status     MemberJoinRequestStatus @default(PENDING)
+  createdAt  DateTime                @default(now())
+  resolvedAt DateTime?
+
+  account MemberAccount @relation(fields: [accountId], references: [id])
+  tenant  Tenant        @relation(fields: [tenantId], references: [id])
+
+  @@unique([accountId, tenantId])
+  @@index([tenantId, status])
+}
+
+enum MemberJoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── MEMBER PUSH SUBSCRIPTION (web push) ────────────────────────────────────
+// One row per browser/device a member has enabled notifications on (a
+// person can have the portal installed on more than one device).
+
+model MemberPushSubscription {
+  id        String   @id @default(cuid())
+  accountId String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  account MemberAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
 }
 
 model MemberOtp {

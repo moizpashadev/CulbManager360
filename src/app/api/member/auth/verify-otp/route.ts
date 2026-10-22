@@ -4,7 +4,7 @@ import { verifyOtpCode } from "@/lib/member-auth/otp"
 import { signMemberToken, MEMBER_COOKIE_NAME } from "@/lib/member-auth/jwt"
 
 export async function POST(request: NextRequest) {
-  const { email, code } = await request.json()
+  const { email, code, ref } = await request.json()
 
   if (!email || typeof email !== "string" || !code || typeof code !== "string") {
     return NextResponse.json({ error: "Email and code are required" }, { status: 400 })
@@ -29,12 +29,20 @@ export async function POST(request: NextRequest) {
     data: { consumedAt: now },
   })
 
-  // First successful verify for an email doubles as signup.
-  const account = await prisma.memberAccount.upsert({
-    where: { email: lowerEmail },
-    update: {},
-    create: { email: lowerEmail },
-  })
+  // First successful verify for an email doubles as signup. Only a brand
+  // new account can be attributed to a referrer — check existence first
+  // rather than using upsert, since upsert can't distinguish create vs.
+  // update and we never want to overwrite an existing referredByAccountId.
+  let account = await prisma.memberAccount.findUnique({ where: { email: lowerEmail } })
+  if (!account) {
+    const referrer =
+      ref && typeof ref === "string" && ref !== ""
+        ? await prisma.memberAccount.findUnique({ where: { id: ref }, select: { id: true } })
+        : null
+    account = await prisma.memberAccount.create({
+      data: { email: lowerEmail, referredByAccountId: referrer?.id ?? null },
+    })
+  }
 
   // Auto-link any per-tenant Member records matching this email that
   // aren't linked yet — covers both "staff added them first" (invite) and

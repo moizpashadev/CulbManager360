@@ -1,7 +1,11 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 2 complete — **deployed and verified live in production** (club360.meyvnlabs.com)
+**Status:** Sprint 3 built and tested locally — **not yet deployed to production** (Sprints 1+2 are live; Sprint 3 is a local commit, deploy is the next step)
 **Last updated:** 2026-10-22
+
+**Scope decisions (2026-10-22, Sprint 3):**
+- **"Find your gym"** = search + request only. Member finds a gym and asks to be added; staff reviews and approves/rejects (`/dashboard/join-requests`). No open self-registration — a gym stays in control of who becomes a real `Member`, avoiding spam signups and members with no plan/payment set up.
+- **Referral** = shareable link + tracking only, no reward/discount logic (none exists yet to tie it to). `MemberAccount.referredByAccountId` records who referred whom; revisit with an actual incentive design later.
 
 **Scope decision (2026-10-22):** Google/Facebook OAuth signup is **deferred** — not required to deliver core value (gym members logging in to see their own data). Sprint 1 ships with **invite + email OTP only**. OAuth moves to a later/optional addition once there's reason to prioritize the standalone-signup growth loop. See section 5.
 
@@ -82,13 +86,15 @@ Update the checkboxes as work lands. Keep "Last updated" current.
 - [x] Portal nav updated (`MemberPortalTopbar`) with links to all 4 new pages.
 - [x] Tested live end-to-end against real seeded data: invited a real member, logged in, verified GET on all 4 new endpoints/pages returns real data, then actually booked a class and a court slot and logged a progress entry — confirmed correct data in DB, correct invoice + KuickPay consumer number generated for the court booking, and confirmed duplicate-booking and time-conflict rejection both correctly return 409. Full lint + production build clean.
 
-### Sprint 3 — Engagement Layer
-- [ ] Push notifications (service worker, VAPID keys, reminder triggers — class reminders, payment due, attendance streaks)
-- [ ] Self-service QR check-in screen
-- [ ] Goal + progress visualization (chart against `MemberHealth.targetWeight`/goal)
-- [ ] "Find your gym" linking flow (search/QR by `Tenant.slug`) for standalone users
-- [ ] Referral flow
-- [ ] PWA polish: install prompts, offline caching (today's schedule, QR code available offline)
+### Sprint 3 — Engagement Layer — ✅ built + tested locally (2026-10-22)
+- [x] Self-service QR check-in — `/portal/checkin`, reuses the existing public `/api/members/[id]/qr` endpoint directly (zero backend changes needed), one QR card per active gym link.
+- [x] Goal + progress visualization — `src/components/charts/weight-progress-chart.tsx` (recharts line chart + `ReferenceLine` for the goal), added to `/portal/progress`, reads `MemberHealth.goal`/`targetWeight` for the member's primary gym.
+- [x] "Find your gym" flow — `GET /api/member/gyms/search` (name search, excludes already-linked/already-requested gyms) + `POST /api/member/join-requests` + `/portal/find-gym` UI. Staff side: `GET /api/join-requests`, `POST /api/join-requests/[id]/{approve,reject}`, `/dashboard/join-requests` page (new nav entry, OWNER/ADMIN/MANAGER). Approving creates a real `Member` (consumer number auto-assigned, same logic as normal member creation) + `MemberGymLink` immediately — no waiting for the member's next login. New schema: `MemberJoinRequest` model.
+- [x] Referral flow — `/portal/referral` shows a copyable link (`/member-login?ref=<accountId>`) and a list of successful referrals. `verify-otp` now accepts an optional `ref` and sets `MemberAccount.referredByAccountId` **only on first-time account creation** (checked via `findUnique` before create, not `upsert`, so an existing account's referrer can never be overwritten). New schema: `MemberAccount.referredByAccountId` self-relation.
+- [x] PWA — `public/member-manifest.json` + `public/sw.js` (network-first navigation with offline fallback to `/portal`, push event handling, notification-click focus/open), scoped to the member portal only via `src/app/(member)/layout.tsx` (staff dashboard is intentionally not a PWA). Install prompt component listens for `beforeinstallprompt`. **Icons are SVG-only** (`icon.svg`, reused as-is) — works for Chrome/Android install, but proper PNG icon set (192×192, 512×512, `apple-touch-icon`) for best iOS support is a follow-up, needs real design assets, not something to fabricate as a placeholder.
+- [x] Push notifications — VAPID keys generated (`web-push` package), `MemberPushSubscription` model, `POST /api/member/push/{subscribe,unsubscribe}`, `NotificationToggle` component (permission request + `PushManager.subscribe`), `src/lib/member-auth/send-push.ts` (sends to every device, auto-cleans up subscriptions the push service reports as gone). **One real trigger wired up**: booking confirmation (both class and court bookings now fire a push). Verified live: booking succeeds normally even when the push send fails (fire-and-forget, doesn't block the request).
+  - **Not built yet — a specific, scoped follow-up, not vague "later" work**: the actual reminder triggers (class-starting-soon, payment-due, attendance-streak) need a new cron job (mirroring `/api/cron/billing` + a new `vercel.json` entry) that periodically scans for upcoming classes/overdue invoices and calls `sendPushToAccount`. This wasn't built this pass since it needs its own design pass (what counts as "upcoming"? what's a "streak"?) rather than being a quick addition.
+  - **Not built yet**: Google/Facebook OAuth-linked push (irrelevant — push works independent of OAuth status, this was never blocked on it, just noting OAuth itself is still deferred per Sprint 1).
 
 ## 5. Open Questions / Decisions Needed
 

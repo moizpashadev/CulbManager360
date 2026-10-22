@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
+import { sendPushToAccount } from "@/lib/member-auth/send-push"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest, props: Params) {
     const booking = await prisma.classBooking.create({
       data: { scheduleId: params.id, memberId: gymLink.memberId, classDate: date, status: "CONFIRMED" },
     })
+    sendPushToAccount(session.sub, {
+      title: "Class booked",
+      body: `${cls.title} on ${date.toLocaleDateString("en-PK", { day: "numeric", month: "short" })}`,
+      url: "/portal/classes",
+    }).catch(() => {})
     return NextResponse.json(booking, { status: 201 })
   } catch {
     return NextResponse.json({ error: "You're already booked for this class" }, { status: 409 })

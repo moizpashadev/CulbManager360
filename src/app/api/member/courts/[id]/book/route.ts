@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { buildKuickpayConsumerNo } from "@/lib/kuickpay-no"
+import { sendPushToAccount } from "@/lib/member-auth/send-push"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -79,6 +80,12 @@ export async function POST(request: NextRequest, props: Params) {
     })
     return b
   })
+
+  sendPushToAccount(session.sub, {
+    title: "Court booked",
+    body: `${court.name} — ${bookingDate} ${startTime}–${endTime}`,
+    url: "/portal/courts",
+  }).catch(() => {})
 
   return NextResponse.json(booking, { status: 201 })
 }

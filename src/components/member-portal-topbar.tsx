@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Dumbbell, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { NotificationToggle } from "@/components/notification-toggle"
 import { cn } from "@/lib/utils"
 
 const NAV = [
@@ -12,6 +13,9 @@ const NAV = [
   { href: "/portal/classes", label: "Classes" },
   { href: "/portal/courts", label: "Courts" },
   { href: "/portal/progress", label: "Progress" },
+  { href: "/portal/checkin", label: "Check-in" },
+  { href: "/portal/find-gym", label: "Find Gym" },
+  { href: "/portal/referral", label: "Invite" },
 ]
 
 export function MemberPortalTopbar({ email }: { email: string }) {
@@ -32,6 +36,7 @@ export function MemberPortalTopbar({ email }: { email: string }) {
           <span className="text-sm font-semibold">Club Manager 360</span>
         </div>
         <div className="flex items-center gap-3">
+          <NotificationToggle />
           <span className="hidden text-sm text-muted-foreground sm:inline">{email}</span>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="mr-1.5 h-4 w-4" />

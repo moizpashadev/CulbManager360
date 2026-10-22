@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Dumbbell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,14 @@ export default function MemberLoginPage() {
   const [error, setError] = useState("")
   const [cooldown, setCooldown] = useState(0)
   const cooldownTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [ref, setRef] = useState<string | null>(null)
+
+  // Read ?ref= without useSearchParams() so this page stays statically
+  // prerenderable (useSearchParams forces a Suspense boundary otherwise).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setRef(params.get("ref"))
+  }, [])
 
   function startCooldown(seconds: number) {
     setCooldown(seconds)
@@ -58,7 +66,7 @@ export default function MemberLoginPage() {
     const res = await fetch("/api/member/auth/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, code }),
+      body: JSON.stringify({ email, code, ref }),
     })
     const data = await res.json()
     if (res.ok) {

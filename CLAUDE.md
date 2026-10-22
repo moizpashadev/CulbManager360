@@ -4,7 +4,7 @@ Multi-tenant SaaS platform for managing gyms/clubs in Pakistan, marketed as "Gym
 
 ## Tech Stack
 
-- **Next.js 15.5.24** (upgraded 2026-10-22 from 14.2.35 to patch two critical RCE CVEs — GHSA-p293-qw3h-jr36, GHSA-2xp9-vwfh-vxw4), App Router (`src/app`), route groups `(auth)`, `(dashboard)`, `(member)`. Dev script uses `--turbopack`.
+- **Next.js 15.5.28** (upgraded 2026-10-22 from 14.2.35 → 15.5.24 to patch two critical RCE CVEs — GHSA-p293-qw3h-jr36, GHSA-2xp9-vwfh-vxw4 — then same-day patched to 15.5.28 for a third critical RCE disclosed shortly after, GHSA affecting SVG handling in the Image Optimization API. New critical Next.js advisories have shown up fast in this window — re-run `npm audit` before assuming the pinned version is still current), App Router (`src/app`), route groups `(auth)`, `(dashboard)`, `(member)`. Dev script uses `--turbopack`.
 - **React 19** (upgraded alongside Next 15 — the officially paired version), TypeScript 5.
 - **Prisma 7.8.0** — uses the newer `prisma-client` generator (not `prisma-client-js`) with a custom output path at `src/generated/prisma` (generated code, regenerate with `npx prisma generate` after pulling schema changes). Connects via `@prisma/adapter-pg` + `pg` driver adapter against PostgreSQL.
 - **Styling**: Tailwind CSS 3.4, shadcn (style `base-nova`, `components.json`), `@base-ui/react`, Radix primitives, `class-variance-authority`, `cmdk`, `lucide-react`, `framer-motion`, `recharts`.
@@ -57,6 +57,7 @@ Second, independent login surface for gym *members* (not staff) — self-service
 - **KuickPay nuance**: `/portal/invoices` shows payment *instructions* (consumer number + amount), not a "Pay Now" button — KuickPay BPS has no in-app checkout, payment happens on the member's own bank's ATM/app, which then calls the existing webhook.
 - **Booking routes** (`/api/member/classes/[id]/book`, `/api/member/courts/[id]/book`) resolve the caller's tenant-scoped `Member.id` server-side from their `MemberGymLink` — never trust a client-supplied `memberId`.
 - Progress self-logging reuses the existing `ProgressEntry` model directly (no schema change needed) with `trainerId: null` marking self-logged vs. trainer-authored entries. Requires the member to have at least one active gym link — standalone (no-gym) progress tracking is not supported yet.
+- **Sprint 3 additions** (built 2026-10-22, not yet deployed): self-service QR check-in (`/portal/checkin`), goal/progress chart, "find your gym" search + staff-approved join requests (`MemberJoinRequest` model, `/dashboard/join-requests`), referral link tracking (`MemberAccount.referredByAccountId`), and a PWA layer scoped to `(member)` routes only (`public/member-manifest.json`, `public/sw.js`, install prompt) with web push notifications (`MemberPushSubscription` model, VAPID keys, `src/lib/member-auth/send-push.ts`) — currently wired to fire on booking confirmation only; reminder-style triggers (class-starting-soon, payment-due, streaks) need a new cron job, not yet built. Full detail in `docs/member-portal-plan.md`.
 
 ## Environment Variables (`.env`)
 
@@ -65,6 +66,7 @@ Second, independent login surface for gym *members* (not staff) — self-service
 - `CRON_SECRET` — bearer token required by `GET /api/cron/billing` (not in the sample `.env`; needed in production, e.g. via Vercel Cron).
 - `NEXT_PUBLIC_APP_URL` — public base URL, used to construct KuickPay webhook URLs shown to tenants and the member-portal invite-email link. **Verify this is actually a live URL after changing it** — production had this silently set to a dead `*.vercel.app` alias for an unknown period before being caught (2026-10-22) via a broken invite-email link, not via any build/deploy failure.
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL` — Resend transactional email, used for member OTP codes and portal invites. Sending domain `meyvnlabs.com` is verified.
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` — web push notification keys (generated via `web-push`'s `generateVAPIDKeys()`), set locally 2026-10-22, **not yet set in Vercel production env vars** — Sprint 3 hasn't been deployed yet.
 
 ## Production Deployment
 
