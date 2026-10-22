@@ -68,7 +68,9 @@ Update the checkboxes as work lands. Keep "Last updated" current.
 - [x] Member-side session/auth — `src/lib/member-auth/{jwt,session,otp,send-otp-email}.ts`, separate cookie `cm360_member_token` (distinct from staff `cm360_token`), same JWT_SECRET but distinct payload shape/verify function so the two can never be confused
 - [x] Tested live: real email delivery confirmed, cooldown/rate-limit, wrong-code rejection, replay-after-consumption rejection, invalid-email-format rejection, and the full success path (session issued, account not duplicated on re-verify) — all tested against the real endpoints, not just unit logic
 - [ ] Invite flow: gym owner/admin invites a `Member` by email → auto-match to existing `MemberAccount` if one exists (creates `MemberGymLink`), else prompts first-time OTP signup
-- [ ] New route group, e.g. `src/app/(member)/portal/*`, isolated from `/dashboard` — **note: no actual portal pages exist yet**, `verify-otp` currently redirects to `/portal` which doesn't exist as a route yet
+- [x] New route group — `src/app/(member)/member-login` (public, two-step email → OTP form) and `src/app/(member)/portal` (protected landing page, shows linked gyms or an empty-state prompt). `src/middleware.ts` extended to gate `/portal/:path*` on the member session and bounce authenticated members away from `/member-login`, fully separate from the existing staff auth branch.
+- [x] `GET /api/member/me` and `POST /api/member/auth/logout` added to support the portal UI
+- [x] Tested live end-to-end: unauthenticated `/portal` → redirects to `/member-login`; login → session issued → `/portal` renders correctly (empty-gyms state verified); authenticated `/member-login` → redirects to `/portal`; logout clears the cookie. Full production build (`npm run build`) also verified clean.
 - [ ] Read-only: own profile, invoices/payment status, attendance history, health/progress reports
 - [ ] Multi-gym history view (joined/left dates per gym, from `MemberGymLink`)
 
