@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Invoices · Club Manager 360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          border: "#e2e5ea",
+          background: "#f7f8fa",
+          foreground: "#1c2434",
+          primary: { DEFAULT: "#1a56db", foreground: "#ffffff" },
+          secondary: { DEFAULT: "#eaf1fd", foreground: "#1a56db" },
+          muted: { DEFAULT: "#eef1f5", foreground: "#6b7280" },
+          warning: { DEFAULT: "#f59e0b", foreground: "#ffffff" },
+          topbar: { DEFAULT: "#ffffff", foreground: "#1c2434" },
+        },
+        fontFamily: {
+          sans: ["DM Sans", "system-ui", "sans-serif"],
+          mono: ["IBM Plex Mono", "monospace"],
+        },
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: "DM Sans", system-ui, sans-serif; }
+  .font-mono { font-family: "IBM Plex Mono", monospace; }
+  input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.6; }
+  .chev { transition: transform 0.15s ease; }
+  .chev.open { transform: rotate(180deg); }
+</style>
+</head>
+<body class="flex h-screen flex-col overflow-hidden bg-background text-foreground antialiased">
+
+  <!-- Topbar (mirrors the app shell, compact) -->
+  <header class="flex h-11 shrink-0 items-center gap-2 border-b border-border bg-topbar px-4">
+    <button id="sidebarToggle" class="mr-1 flex h-7 w-7 items-center justify-center rounded-full text-topbar-foreground/60 hover:bg-muted hover:text-topbar-foreground md:hidden">
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="flex h-6 w-6 items-center justify-center rounded bg-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="m3.9 3.9 1.4 1.4"/><path d="M5.343 3.515a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829l-6.364 6.364a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829z"/></svg>
+    </div>
+    <span class="text-sm font-semibold tracking-tight text-topbar-foreground">Club Manager 360</span>
+    <span class="rounded border border-primary/40 bg-primary/20 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-primary">Kuickpay BPS</span>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Sidebar (dummy nav) -->
+    <aside id="sidebar" class="hidden w-52 shrink-0 flex-col overflow-y-auto border-r border-border bg-white md:flex">
+      <nav class="flex-1 py-3">
+        <div class="mb-4">
+          <p class="mb-1 px-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Overview</p>
+          <ul>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+              Dashboard
+            </a></li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <p class="mb-1 px-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Billing</p>
+          <ul>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-primary bg-secondary px-4 py-2 text-sm font-medium text-primary">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Invoices
+            </a></li>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Consumers
+            </a></li>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Payment Batches
+            </a></li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <p class="mb-1 px-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Reports</p>
+          <ul>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              Reconciliation
+            </a></li>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Analytics
+            </a></li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <p class="mb-1 px-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Settings</p>
+          <ul>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Bank Mnemonics
+            </a></li>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Notification Templates
+            </a></li>
+            <li><a href="#" class="flex items-center gap-3 border-l-2 border-transparent px-4 py-2 text-sm text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground">
+              <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v6m0 6v6m8.66-13.66-4.24 4.24m-8.84 8.84-4.24 4.24M23 12h-6m-6 0H1m19.66 4.66-4.24-4.24m-8.84-8.84-4.24-4.24"/></svg>
+              API Keys
+            </a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="border-t border-border px-4 py-3">
+        <p class="text-[11px] text-muted-foreground">Club Manager 360 · Kuickpay BPS</p>
+      </div>
+    </aside>
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="hidden fixed inset-0 z-30 bg-black/40 md:hidden"></div>
+
+  <main class="flex-1 overflow-y-auto p-3 sm:p-4">
+    <div class="mx-auto max-w-[1600px] space-y-3">
+
+    <!-- Page header — single line, no wasted subtitle block -->
+    <div class="flex flex-wrap items-baseline justify-between gap-1">
+      <h1 class="text-lg font-semibold text-foreground">Invoices</h1>
+      <p id="resultCount" class="text-xs text-muted-foreground">6 results</p>
+    </div>
+
+    <!-- Filters card -->
+    <div class="rounded-lg border border-border bg-white p-3 shadow-sm">
+
+      <!-- Main filter row -->
+      <div class="flex flex-wrap items-end gap-2">
+        <label class="flex h-9 items-center gap-1.5 text-xs font-medium text-foreground">
+          <input id="dateFilterToggle" type="checkbox" checked
+            class="h-3.5 w-3.5 rounded border-border text-primary focus:ring-1 focus:ring-primary" />
+          Date Filter
+        </label>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">From</label>
+          <input id="fromDate" type="date" value="2026-01-01"
+            class="h-9 w-[145px] rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">To</label>
+          <input id="toDate" type="date" value="2026-07-07"
+            class="h-9 w-[145px] rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Select Filter</label>
+          <select class="h-9 w-[140px] rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+            <option>All Statuses</option>
+            <option>Posted</option>
+            <option>Pending</option>
+            <option>Paid</option>
+            <option>Overdue</option>
+          </select>
+        </div>
+
+        <div class="flex min-w-[200px] flex-1 flex-col gap-1">
+          <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Search</label>
+          <div class="relative">
+            <svg class="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Reg #, invoice #, reference #…"
+              class="h-9 w-full rounded-md border border-border bg-white pl-8 pr-3 text-xs placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />
+          </div>
+        </div>
+
+        <button class="h-9 shrink-0 rounded-full bg-primary px-5 text-xs font-medium text-white hover:bg-primary/90">
+          Search
+        </button>
+
+        <div class="relative">
+          <button id="addFilterBtn" class="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-primary/50 bg-secondary px-3 text-xs font-medium text-primary hover:bg-secondary/70">
+            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Filter
+          </button>
+
+          <!-- Popover: pick a field, then a value, then add it as a chip -->
+          <div id="addFilterPopover" class="hidden absolute left-0 right-auto z-10 mt-1.5 w-[calc(100vw-1.5rem)] max-w-64 rounded-lg border border-border bg-white p-3 shadow-lg sm:left-auto sm:right-0 sm:w-64">
+            <div class="flex flex-col gap-1">
+              <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Field</label>
+              <select id="filterFieldSelect" class="h-9 rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                <option value="branch">Branch</option>
+                <option value="paymentMethod">Payment Method</option>
+                <option value="minAmount">Min Amount</option>
+                <option value="maxAmount">Max Amount</option>
+                <option value="bankMnemonic">Bank Mnemonic</option>
+                <option value="consumerNumber">Consumer #</option>
+              </select>
+            </div>
+            <div class="mt-2 flex flex-col gap-1">
+              <label class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Value</label>
+              <div id="filterValueContainer"><!-- dynamic input rendered here --></div>
+            </div>
+            <div class="mt-3 flex justify-end gap-2">
+              <button id="cancelFilterBtn" class="h-8 rounded-full border border-border bg-white px-3 text-xs font-medium text-muted-foreground hover:bg-muted/40">Cancel</button>
+              <button id="confirmAddFilterBtn" class="h-8 rounded-full bg-primary px-3 text-xs font-medium text-white hover:bg-primary/90">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active filter chips (only shown once at least one is added) -->
+      <div id="activeFiltersRow" class="hidden mt-2">
+        <div id="activeFiltersChips" class="flex flex-wrap items-center gap-1.5"></div>
+      </div>
+
+      <!-- Export row -->
+      <div class="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border pt-3">
+        <span class="mr-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Export</span>
+        <button class="flex h-8 items-center gap-1.5 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Excel
+        </button>
+        <button class="flex h-8 items-center gap-1.5 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button class="flex h-8 items-center gap-1.5 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF · 3-up
+        </button>
+        <button class="flex h-8 items-center gap-1.5 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          PDF · Single
+        </button>
+      </div>
+    </div>
+
+    <!-- Table card — bulk-action bar merged into its header, no separate card -->
+    <div class="overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
+        <p class="text-xs text-muted-foreground">
+          <span id="selectedCount" class="font-semibold text-foreground">0</span> selected
+        </p>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button class="h-8 rounded-full bg-primary px-3 text-xs font-medium text-white hover:bg-primary/90">
+            Post &amp; Notify All
+          </button>
+          <button class="h-8 rounded-full border border-border bg-white px-3 text-xs font-medium text-foreground hover:bg-muted/40">
+            Post
+          </button>
+          <button class="h-8 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+            Notify SMS + Email
+          </button>
+          <button class="h-8 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+            Notify Email
+          </button>
+          <button class="h-8 rounded-full border border-border bg-white px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground">
+            Notify SMS
+          </button>
+        </div>
+      </div>
+
+      <div class="relative w-full overflow-auto">
+        <table class="w-full caption-bottom text-xs">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="h-9 w-9 px-3 text-left align-middle">
+                <input id="selectAll" type="checkbox" class="h-3.5 w-3.5 rounded border-border text-primary focus:ring-1 focus:ring-primary" />
+              </th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Action</th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Branch</th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Reg Number</th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Invoice Number</th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Reference Number</th>
+              <th class="h-9 px-3 text-left align-middle font-medium uppercase tracking-wide text-muted-foreground">Issue Date</th>
+              <th class="h-9 px-3 text-right align-middle font-medium uppercase tracking-wide text-muted-foreground">Total Amount</th>
+              <th class="h-9 px-3 text-right align-middle font-medium uppercase tracking-wide text-muted-foreground">Amt. After Due</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceRows" class="[&_tr:last-child]:border-0">
+            <!-- rows injected by script below -->
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-1.5 text-xs">
+        <div class="flex items-center gap-3">
+          <p id="pageSummary" class="text-muted-foreground">Showing 1–10 of 50</p>
+          <label class="flex items-center gap-1.5 text-muted-foreground">
+            Rows per page
+            <select id="pageSizeSelect" class="h-7 rounded-md border border-border bg-white px-1.5 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+        </div>
+        <div class="flex gap-1">
+          <button id="prevPageBtn" class="rounded-full border border-border bg-white px-2.5 py-1 text-muted-foreground hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-50">Previous</button>
+          <button id="nextPageBtn" class="rounded-full border border-border bg-white px-2.5 py-1 text-muted-foreground hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-50">Next</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </main>
+  </div>
+
+  <script>
+    // ── Dummy data: ~50 records ──────────────────────────────────────────────
+    function randomDigits(n) {
+      let s = ""
+      for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10)
+      return s
+    }
+    const BRANCHES = ["khi", "lhr", "isb"]
+    const ISSUE_DATES = ["01-Jul-26", "02-Jul-26", "03-Jul-26", "04-Jul-26", "05-Jul-26", "06-Jul-26", "07-Jul-26"]
+    const AMOUNTS = [51, 52, 54, 75, 100, 120, 150, 200, 250, 300]
+
+    const rows = Array.from({ length: 50 }, (_, i) => {
+      const total = AMOUNTS[i % AMOUNTS.length]
+      const overdue = i % 5 === 0 // some invoices carry a late-payment surcharge
+      return {
+        branch: BRANCHES[i % BRANCHES.length],
+        reg: randomDigits(13),
+        invoice: "00960202" + randomDigits(11),
+        ref: "2607" + randomDigits(8),
+        issued: ISSUE_DATES[i % ISSUE_DATES.length],
+        total: total.toFixed(2),
+        afterDue: (overdue ? total + 25 : total).toFixed(2),
+      }
+    })
+
+    // ── Pagination ───────────────────────────────────────────────────────────
+    const tbody = document.getElementById("invoiceRows")
+    const pageSizeSelect = document.getElementById("pageSizeSelect")
+    const pageSummary = document.getElementById("pageSummary")
+    const prevPageBtn = document.getElementById("prevPageBtn")
+    const nextPageBtn = document.getElementById("nextPageBtn")
+    const resultCount = document.getElementById("resultCount")
+
+    let currentPage = 1
+    let pageSize = Number(pageSizeSelect.value)
+
+    function renderTable() {
+      const total = rows.length
+      const totalPages = Math.max(1, Math.ceil(total / pageSize))
+      currentPage = Math.min(currentPage, totalPages)
+
+      const start = (currentPage - 1) * pageSize
+      const pageRows = rows.slice(start, start + pageSize)
+
+      tbody.innerHTML = pageRows.map((r) => `
+        <tr class="border-b border-border hover:bg-muted/30">
+          <td class="p-2.5 align-middle">
+            <input type="checkbox" class="row-checkbox h-3.5 w-3.5 rounded border-border text-primary focus:ring-1 focus:ring-primary" />
+          </td>
+          <td class="p-2.5 align-middle">
+            <button class="rounded-full border border-primary/40 px-2.5 py-1 text-[11px] font-medium text-primary hover:bg-primary/5">Edit</button>
+          </td>
+          <td class="p-2.5 align-middle text-foreground uppercase">${r.branch}</td>
+          <td class="p-2.5 align-middle font-mono text-muted-foreground">${r.reg}</td>
+          <td class="p-2.5 align-middle font-mono text-muted-foreground">${r.invoice}</td>
+          <td class="p-2.5 align-middle font-mono text-muted-foreground">${r.ref}</td>
+          <td class="p-2.5 align-middle text-muted-foreground">${r.issued}</td>
+          <td class="p-2.5 align-middle text-right font-mono font-semibold text-foreground">${r.total}</td>
+          <td class="p-2.5 align-middle text-right font-mono font-semibold text-foreground">${r.afterDue}</td>
+        </tr>
+      `).join("")
+
+      pageSummary.textContent = total === 0
+        ? "No results"
+        : `Showing ${start + 1}–${Math.min(start + pageSize, total)} of ${total}`
+      resultCount.textContent = `${total} results`
+
+      prevPageBtn.disabled = currentPage <= 1
+      nextPageBtn.disabled = currentPage >= totalPages
+
+      selectAll.checked = false
+      updateCount()
+    }
+
+    pageSizeSelect.addEventListener("change", () => {
+      pageSize = Number(pageSizeSelect.value)
+      currentPage = 1
+      renderTable()
+    })
+    prevPageBtn.addEventListener("click", () => {
+      if (currentPage > 1) { currentPage--; renderTable() }
+    })
+    nextPageBtn.addEventListener("click", () => {
+      currentPage++; renderTable()
+    })
+
+    const selectAll = document.getElementById("selectAll")
+    const selectedCount = document.getElementById("selectedCount")
+    function rowCheckboxes() { return Array.from(document.querySelectorAll(".row-checkbox")) }
+    function updateCount() {
+      selectedCount.textContent = rowCheckboxes().filter((c) => c.checked).length
+    }
+    selectAll.addEventListener("change", () => {
+      rowCheckboxes().forEach((c) => (c.checked = selectAll.checked))
+      updateCount()
+    })
+    tbody.addEventListener("change", (e) => {
+      if (e.target.classList.contains("row-checkbox")) updateCount()
+    })
+
+    renderTable()
+
+    const dateToggle = document.getElementById("dateFilterToggle")
+    const fromDate = document.getElementById("fromDate")
+    const toDate = document.getElementById("toDate")
+    function syncDateInputs() {
+      fromDate.disabled = !dateToggle.checked
+      toDate.disabled = !dateToggle.checked
+      fromDate.classList.toggle("opacity-50", !dateToggle.checked)
+      toDate.classList.toggle("opacity-50", !dateToggle.checked)
+    }
+    dateToggle.addEventListener("change", syncDateInputs)
+    syncDateInputs()
+
+    // ── Add Filter popover ──────────────────────────────────────────────────
+    const FIELD_CONFIG = {
+      branch:         { label: "Branch",         type: "select", options: ["KHI", "LHR", "ISB"] },
+      paymentMethod:  { label: "Payment Method",  type: "select", options: ["Kuickpay", "Cash", "Bank Transfer"] },
+      minAmount:      { label: "Min Amount",      type: "number", placeholder: "0.00" },
+      maxAmount:      { label: "Max Amount",      type: "number", placeholder: "0.00" },
+      bankMnemonic:   { label: "Bank Mnemonic",   type: "text",   placeholder: "e.g. HBL" },
+      consumerNumber: { label: "Consumer #",      type: "text",   placeholder: "e.g. 0000001" },
+    }
+
+    const addFilterBtn = document.getElementById("addFilterBtn")
+    const addFilterPopover = document.getElementById("addFilterPopover")
+    const filterFieldSelect = document.getElementById("filterFieldSelect")
+    const filterValueContainer = document.getElementById("filterValueContainer")
+    const activeFiltersRow = document.getElementById("activeFiltersRow")
+    const activeFiltersChips = document.getElementById("activeFiltersChips")
+
+    let activeFilters = [] // { key, label, value }
+
+    function renderValueInput() {
+      const cfg = FIELD_CONFIG[filterFieldSelect.value]
+      if (cfg.type === "select") {
+        filterValueContainer.innerHTML = `
+          <select id="filterValueInput" class="h-9 w-full rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+            ${cfg.options.map((o) => `<option value="${o}">${o}</option>`).join("")}
+          </select>`
+      } else {
+        filterValueContainer.innerHTML = `
+          <input id="filterValueInput" type="${cfg.type}" placeholder="${cfg.placeholder ?? ""}"
+            class="h-9 w-full rounded-md border border-border bg-white px-2 text-xs focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" />`
+      }
+    }
+
+    function openPopover() {
+      addFilterPopover.classList.remove("hidden")
+      renderValueInput()
+    }
+    function closePopover() {
+      addFilterPopover.classList.add("hidden")
+    }
+
+    addFilterBtn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      addFilterPopover.classList.contains("hidden") ? openPopover() : closePopover()
+    })
+    filterFieldSelect.addEventListener("change", renderValueInput)
+    document.getElementById("cancelFilterBtn").addEventListener("click", closePopover)
+    document.addEventListener("click", (e) => {
+      if (!addFilterPopover.contains(e.target) && e.target !== addFilterBtn) closePopover()
+    })
+
+    function renderChips() {
+      activeFiltersRow.classList.toggle("hidden", activeFilters.length === 0)
+      activeFiltersChips.innerHTML = activeFilters.map((f, i) => `
+        <span class="flex items-center gap-1.5 rounded-full border border-primary/30 bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">
+          ${f.label}: ${f.value}
+          <button data-remove-index="${i}" class="remove-chip flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-primary/20">
+            <svg class="h-2.5 w-2.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </span>
+      `).join("")
+    }
+    activeFiltersChips.addEventListener("click", (e) => {
+      const btn = e.target.closest(".remove-chip")
+      if (!btn) return
+      activeFilters.splice(Number(btn.dataset.removeIndex), 1)
+      renderChips()
+    })
+
+    document.getElementById("confirmAddFilterBtn").addEventListener("click", () => {
+      const key = filterFieldSelect.value
+      const valueInput = document.getElementById("filterValueInput")
+      const value = valueInput.value.trim()
+      if (!value) { valueInput.focus(); return }
+      activeFilters.push({ key, label: FIELD_CONFIG[key].label, value })
+      renderChips()
+      closePopover()
+    })
+
+    // ── Mobile sidebar toggle ───────────────────────────────────────────────
+    const sidebar = document.getElementById("sidebar")
+    const sidebarOverlay = document.getElementById("sidebarOverlay")
+    const sidebarToggle = document.getElementById("sidebarToggle")
+    function openSidebar() {
+      sidebar.classList.remove("hidden")
+      sidebar.classList.add("flex", "absolute", "inset-y-0", "left-0", "z-40", "shadow-xl")
+      sidebarOverlay.classList.remove("hidden")
+    }
+    function closeSidebar() {
+      sidebar.classList.add("hidden")
+      sidebar.classList.remove("flex", "absolute", "inset-y-0", "left-0", "z-40", "shadow-xl")
+      sidebarOverlay.classList.add("hidden")
+    }
+    sidebarToggle.addEventListener("click", openSidebar)
+    sidebarOverlay.addEventListener("click", closeSidebar)
+  </script>
+</body>
+</html>

@@ -18,6 +18,10 @@ async function main() {
 
   console.log("🌱  Seeding Club Manager 360 — Fitness Nation …")
 
+  // Clear all tenant data to avoid slug/id conflicts on re-runs
+  await prisma.$executeRawUnsafe('TRUNCATE TABLE "Tenant" CASCADE')
+  console.log("🗑️   Cleared existing tenant data")
+
   // ── Super Admin ────────────────────────────────────────────────────────────
   const superHash = await bcrypt.hash("super123", 10)
   await prisma.superAdmin.upsert({

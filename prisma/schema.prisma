@@ -116,6 +116,7 @@ model Tenant {
   progressReports   ProgressReport[]
   courts            Court[]
   slotBookings      SlotBooking[]
+  memberGymLinks    MemberGymLink[]
   platformPlan      PlatformPlan?       @relation(fields: [platformPlanId], references: [id])
 }
 
@@ -175,6 +176,7 @@ model Member {
   progressEntries ProgressEntry[]
   progressReports ProgressReport[]
   slotBookings    SlotBooking[]
+  gymLinks        MemberGymLink[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, consumerNumber])
@@ -185,6 +187,65 @@ enum MemberStatus {
   INACTIVE
   SUSPENDED
   EXPIRED
+}
+
+// ─── MEMBER ACCOUNT (member-portal login identity) ────────────────────────
+// A person's login identity — independent of any gym. One MemberAccount can
+// link to many per-tenant Member records over time (MemberGymLink), so the
+// same person can move between gyms (or use the app standalone with none)
+// while keeping one account and a history of gym memberships.
+
+model MemberAccount {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  oauthGoogleId String?  @unique
+  oauthFbId     String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gymLinks        MemberGymLink[]
+  // Note: self-logged ProgressEntry support (standalone + gym-linked) is
+  // Sprint 2 work — will need ProgressEntry.accountId added then.
+
+  @@index([oauthGoogleId])
+  @@index([oauthFbId])
+}
+
+model MemberOtp {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// ─── MEMBER GYM LINK (per-gym membership history) ──────────────────────────
+
+model MemberGymLink {
+  id        String             @id @default(cuid())
+  accountId String
+  tenantId  String
+  memberId  String
+  status    MemberGymLinkStatus @default(ACTIVE)
+  joinedAt  DateTime           @default(now())
+  leftAt    DateTime?
+  createdAt DateTime           @default(now())
+
+  account MemberAccount @relation(fields: [accountId], references: [id])
+  tenant  Tenant        @relation(fields: [tenantId], references: [id])
+  member  Member        @relation(fields: [memberId], references: [id])
+
+  @@unique([accountId, tenantId, memberId])
+  @@index([tenantId])
+}
+
+enum MemberGymLinkStatus {
+  ACTIVE
+  FROZEN
+  LEFT
 }
 
 // ─── MEMBERSHIP PLAN ───────────────────────────────────────────────────────
