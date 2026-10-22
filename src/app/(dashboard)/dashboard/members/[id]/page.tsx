@@ -10,6 +10,7 @@ import { AssignPlanForm } from "./assign-plan-form"
 import { CancelMembershipButton } from "./cancel-membership-button"
 import { MembershipPauseButton } from "./membership-pause-button"
 import { GenerateInvoiceButton } from "./generate-invoice-button"
+import { InviteToPortalButton } from "./invite-to-portal-button"
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ assign?: string }> }
 
@@ -82,6 +83,7 @@ export default async function MemberProfilePage(props: Props) {
             <p className="font-mono text-sm text-muted-foreground">{member.email}</p>
           </div>
           <div className="flex items-center gap-3">
+              <InviteToPortalButton memberId={member.id} />
               <MemberQrButton memberId={member.id} memberName={`${member.firstName} ${member.lastName}`} memberPhone={member.phone} />
               <Link
                 href={`/dashboard/members/${member.id}/health`}

@@ -36,6 +36,31 @@ export async function POST(request: NextRequest) {
     create: { email: lowerEmail },
   })
 
+  // Auto-link any per-tenant Member records matching this email that
+  // aren't linked yet — covers both "staff added them first" (invite) and
+  // "they signed up here first" ordering, without needing a separate
+  // pending-invite state. Member.email is only unique per-tenant, so one
+  // email can legitimately match Member rows at more than one gym.
+  const matchingMembers = await prisma.member.findMany({ where: { email: lowerEmail } })
+  if (matchingMembers.length > 0) {
+    const existingLinks = await prisma.memberGymLink.findMany({
+      where: { accountId: account.id, memberId: { in: matchingMembers.map((m) => m.id) } },
+      select: { memberId: true },
+    })
+    const linkedMemberIds = new Set(existingLinks.map((l) => l.memberId))
+    const toCreate = matchingMembers.filter((m) => !linkedMemberIds.has(m.id))
+    if (toCreate.length > 0) {
+      await prisma.memberGymLink.createMany({
+        data: toCreate.map((m) => ({
+          accountId: account.id,
+          tenantId: m.tenantId,
+          memberId: m.id,
+          status: "ACTIVE" as const,
+        })),
+      })
+    }
+  }
+
   const gymLinks = await prisma.memberGymLink.findMany({
     where: { accountId: account.id },
     include: { tenant: { select: { name: true, slug: true } } },

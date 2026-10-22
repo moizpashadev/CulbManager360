@@ -1,6 +1,6 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 1 in progress
+**Status:** Sprint 1 complete
 **Last updated:** 2026-10-22
 
 **Scope decision (2026-10-22):** Google/Facebook OAuth signup is **deferred** — not required to deliver core value (gym members logging in to see their own data). Sprint 1 ships with **invite + email OTP only**. OAuth moves to a later/optional addition once there's reason to prioritize the standalone-signup growth loop. See section 5.
@@ -67,7 +67,7 @@ Update the checkboxes as work lands. Keep "Last updated" current.
 - [x] OTP verify endpoint — `POST /api/member/auth/verify-otp` (checks code, marks OTP consumed so it can't be replayed, upserts `MemberAccount` — first successful verify doubles as signup — issues member session)
 - [x] Member-side session/auth — `src/lib/member-auth/{jwt,session,otp,send-otp-email}.ts`, separate cookie `cm360_member_token` (distinct from staff `cm360_token`), same JWT_SECRET but distinct payload shape/verify function so the two can never be confused
 - [x] Tested live: real email delivery confirmed, cooldown/rate-limit, wrong-code rejection, replay-after-consumption rejection, invalid-email-format rejection, and the full success path (session issued, account not duplicated on re-verify) — all tested against the real endpoints, not just unit logic
-- [ ] Invite flow: gym owner/admin invites a `Member` by email → auto-match to existing `MemberAccount` if one exists (creates `MemberGymLink`), else prompts first-time OTP signup
+- [x] Invite flow — `POST /api/members/[id]/invite` (staff-triggered, "Invite to Portal" button on the member profile page): sends an email via Resend pointing to `/member-login`, and immediately creates the `MemberGymLink` if a `MemberAccount` already exists for that email. For the "no account yet" case, `verify-otp` itself now auto-links any `Member` rows matching the verified email across tenants, so linking happens correctly regardless of invite/signup ordering — no separate pending-invite state needed.
 - [x] New route group — `src/app/(member)/member-login` (public, two-step email → OTP form) and `src/app/(member)/portal` (protected landing page, shows linked gyms or an empty-state prompt). `src/middleware.ts` extended to gate `/portal/:path*` on the member session and bounce authenticated members away from `/member-login`, fully separate from the existing staff auth branch.
 - [x] `GET /api/member/me` and `POST /api/member/auth/logout` added to support the portal UI
 - [x] Tested live end-to-end: unauthenticated `/portal` → redirects to `/member-login`; login → session issued → `/portal` renders correctly (empty-gyms state verified); authenticated `/member-login` → redirects to `/portal`; logout clears the cookie. Full production build (`npm run build`) also verified clean.
