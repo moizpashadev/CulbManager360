@@ -1,7 +1,17 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 3 complete — **deployed and verified live in production** (club360.meyvnlabs.com). All of Sprint 1, 2, and 3 are now live.
+**Status:** Sprint 3 complete and deployed. **Member app rebranded to "Me360"** (2026-10-23) — staff dashboard stays "Club Manager 360", same backend/domain/features, see section 8. All live in production (club360.meyvnlabs.com).
 **Last updated:** 2026-10-23
+
+## 8. Me360 Rebrand (2026-10-23)
+
+The member/customer-facing app is now branded **"Me360"**, separate from the staff-facing **"Club Manager 360"** product name — same platform, same backend, same domain, same `(member)` route structure, purely a branding split (member side didn't feel right under the gym-owner-facing name for health tracking/diet/bookings/future coaching features).
+
+- Entry point: `club360.meyvnlabs.com/me360` (middleware-redirects to `/portal` or `/member-login` based on session). `/Me360` normalizes to `/me360` — Next.js matchers are case-sensitive/literal so both are listed explicitly in `src/middleware.ts`'s matcher array.
+- Renamed: login page, portal topbar, PWA manifest name/short_name, install prompt, OTP + invite email templates, page metadata/title.
+- "Powered by Club Manager 360" added to the login page footer and both email templates.
+- Staff dashboard (sidebar/topbar/admin) deliberately unchanged — still "Club Manager 360". The staff "Invite to Portal" button now says "Invite to Me360" so staff know what they're sending members into.
+- **Not done**: a distinct Me360 visual identity (icon/logo) — currently reuses the same dumbbell icon as Club Manager 360. A dedicated subdomain (`me360.meyvnlabs.com`) was called out as optional/later in the decision doc, not built.
 
 **Scope decisions (2026-10-22, Sprint 3):**
 - **"Find your gym"** = search + request only. Member finds a gym and asks to be added; staff reviews and approves/rejects (`/dashboard/join-requests`). No open self-registration — a gym stays in control of who becomes a real `Member`, avoiding spam signups and members with no plan/payment set up.
