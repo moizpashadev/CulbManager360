@@ -1,6 +1,6 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 3 complete and deployed. Member app rebranded to "Me360" (section 8), then given a design pass — mobile bottom nav, richer home dashboard, visual polish (section 9). All live in production (club360.meyvnlabs.com).
+**Status:** Sprint 3 complete and deployed. Member app rebranded to "Me360" (section 8), then given a design pass — mobile bottom nav, richer home dashboard, visual polish (section 9). All **deployed and verified live** in production (club360.meyvnlabs.com) — confirmed via direct requests against the live site, not just local testing.
 **Last updated:** 2026-10-23
 
 ## 8. Me360 Rebrand (2026-10-23)
