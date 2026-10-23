@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { BookCourtButton } from "@/components/book-court-button"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { Grid3x3 } from "lucide-react"
 
 function fmt(n: unknown) {
@@ -28,10 +29,7 @@ export default async function PortalCourtsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Courts</h1>
-        <p className="text-sm text-muted-foreground">Book a time slot</p>
-      </div>
+      <MemberPageHeader icon={Grid3x3} title="Courts" description="Book a time slot" />
 
       {courts.length === 0 ? (
         <Card>

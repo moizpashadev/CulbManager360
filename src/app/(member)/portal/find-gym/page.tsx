@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { Search, Building2 } from "lucide-react"
 
 type Gym = { id: string; name: string; slug: string; alreadyLinked: boolean; requestPending: boolean }
@@ -51,12 +52,11 @@ export default function FindGymPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Find Your Gym</h1>
-        <p className="text-sm text-muted-foreground">
-          Search for your gym and ask to be added — they&apos;ll review and approve your request.
-        </p>
-      </div>
+      <MemberPageHeader
+        icon={Search}
+        title="Find Your Gym"
+        description="Search for your gym and ask to be added — they'll review and approve your request."
+      />
 
       {sentFor && (
         <div className="rounded-md border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground">

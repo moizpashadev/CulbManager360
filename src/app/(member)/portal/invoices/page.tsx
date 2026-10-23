@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { Receipt } from "lucide-react"
 
 const paymentColors: Record<string, "success" | "warning" | "secondary"> = {
@@ -33,10 +34,7 @@ export default async function PortalInvoicesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Invoices</h1>
-        <p className="text-sm text-muted-foreground">Your billing history across all gyms</p>
-      </div>
+      <MemberPageHeader icon={Receipt} title="Invoices" description="Your billing history across all gyms" />
 
       {invoices.length === 0 ? (
         <Card>

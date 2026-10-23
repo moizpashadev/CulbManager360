@@ -1,6 +1,6 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 3 complete and deployed. **Member app rebranded to "Me360"** (2026-10-23) — staff dashboard stays "Club Manager 360", same backend/domain/features, see section 8. All live in production (club360.meyvnlabs.com).
+**Status:** Sprint 3 complete and deployed. Member app rebranded to "Me360" (section 8), then given a design pass — mobile bottom nav, richer home dashboard, visual polish (section 9). All live in production (club360.meyvnlabs.com).
 **Last updated:** 2026-10-23
 
 ## 8. Me360 Rebrand (2026-10-23)
@@ -12,6 +12,19 @@ The member/customer-facing app is now branded **"Me360"**, separate from the sta
 - "Powered by Club Manager 360" added to the login page footer and both email templates.
 - Staff dashboard (sidebar/topbar/admin) deliberately unchanged — still "Club Manager 360". The staff "Invite to Portal" button now says "Invite to Me360" so staff know what they're sending members into.
 - **Not done**: a distinct Me360 visual identity (icon/logo) — currently reuses the same dumbbell icon as Club Manager 360. A dedicated subdomain (`me360.meyvnlabs.com`) was called out as optional/later in the decision doc, not built.
+
+## 9. Me360 Design Pass (2026-10-23)
+
+Scope decision: keep the same brand colors/icon as Club Manager 360 ("one brand family" — explicit in the rebrand decision), focus on structure and polish rather than a new visual identity.
+
+- **Mobile bottom nav** (`src/components/member-bottom-nav.tsx`) — 5 tabs: Home, Check-in, Book, Invoices, More. Visible only below `sm` breakpoint; the existing horizontal top nav strip (`MemberPortalTopbar`) is now desktop/tablet-only (`hidden sm:flex`), so there's no duplicate navigation on any screen size.
+- **New hub pages**: `/portal/book` (picker between Classes/Courts — kept those as separate pages rather than merging their booking logic, lower risk) and `/portal/more` (Progress, Find a Gym, Invite Friends, Log out — the less-frequent actions that didn't fit in 5 bottom-tab slots).
+- **Richer home dashboard** (`/portal`) — now shows: personalized greeting (pulls `firstName` from the member's primary gym record), outstanding balance with a link to pay, active membership plan + days remaining, next upcoming booking (whichever of class/court is sooner), and 3 quick-action cards (Check-in / Book / Log Progress) above the existing gym list. All reads from existing models (`Membership`, `Invoice`, `ClassBooking`, `SlotBooking`) — no schema changes needed.
+- **Shared `MemberPageHeader` component** — consistent icon-badge + title + description header applied across every portal page for visual consistency.
+- **Login page polish** — soft radial brand-color gradient background, larger filled icon badge, card shadow.
+- **Bug caught and fixed before shipping**: the referral link was updated to point at `/me360?ref=...` (the proper shareable entry point) instead of `/member-login?ref=...` directly, but the `/me360` middleware redirect used `new URL(path, request.url)`, which silently drops the original query string. Fixed by explicitly copying `request.nextUrl.search` onto the redirect target. Verified live: `/me360?ref=test123` → `/member-login?ref=test123`, param intact.
+
+Tested live end-to-end: all portal pages load, home dashboard renders real membership/invoice/booking data (confirmed "Hi, Hassan" personalized greeting pulling from a real linked gym record), referral link fix verified. Full build and lint clean.
 
 **Scope decisions (2026-10-22, Sprint 3):**
 - **"Find your gym"** = search + request only. Member finds a gym and asks to be added; staff reviews and approves/rejects (`/dashboard/join-requests`). No open self-registration — a gym stays in control of who becomes a real `Member`, avoiding spam signups and members with no plan/payment set up.

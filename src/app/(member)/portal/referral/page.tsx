@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { ReferralLinkCard } from "@/components/referral-link-card"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { Users } from "lucide-react"
 
 export default async function ReferralPage() {
@@ -15,14 +16,13 @@ export default async function ReferralPage() {
   })
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
-  const referralLink = `${appUrl}/member-login?ref=${session.sub}`
+  // /me360 is the shareable entry point (redirects to login, carrying ?ref
+  // through) rather than linking /member-login directly.
+  const referralLink = `${appUrl}/me360?ref=${session.sub}`
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Invite Friends</h1>
-        <p className="text-sm text-muted-foreground">Share your link — track who signs up</p>
-      </div>
+      <MemberPageHeader icon={Users} title="Invite Friends" description="Share your link — track who signs up" />
 
       <ReferralLinkCard link={referralLink} />
 

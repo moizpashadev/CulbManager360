@@ -3,6 +3,7 @@ import { getMemberSession } from "@/lib/member-auth/session"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { LogProgressForm } from "@/components/log-progress-form"
 import { WeightProgressChart } from "@/components/charts/weight-progress-chart"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { TrendingUp, Target } from "lucide-react"
 
 const GOAL_LABELS: Record<string, string> = {
@@ -58,10 +59,7 @@ export default async function PortalProgressPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Progress</h1>
-        <p className="text-sm text-muted-foreground">Track your weekly measurements</p>
-      </div>
+      <MemberPageHeader icon={TrendingUp} title="Progress" description="Track your weekly measurements" />
 
       {gyms.length === 0 ? (
         <Card>

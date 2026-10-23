@@ -78,13 +78,16 @@ export default function MemberLoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
+    <div
+      className="relative flex min-h-screen items-center justify-center px-4"
+      style={{ background: "radial-gradient(circle at 50% 0%, hsl(157 70% 92%) 0%, hsl(var(--background)) 55%)" }}
+    >
+      <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="space-y-2 text-center">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <Dumbbell className="h-5 w-5 text-primary" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-sm shadow-primary/30">
+            <Dumbbell className="h-6 w-6 text-primary-foreground" />
           </div>
-          <CardTitle>Me360</CardTitle>
+          <CardTitle className="text-2xl">Me360</CardTitle>
           <CardDescription>
             {step === "email"
               ? "Enter your email to get a login code"

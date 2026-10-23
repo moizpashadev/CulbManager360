@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { QrCode } from "lucide-react"
 
 export default async function PortalCheckinPage() {
@@ -14,10 +15,7 @@ export default async function PortalCheckinPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Check-in</h1>
-        <p className="text-sm text-muted-foreground">Show this to the front desk to check in</p>
-      </div>
+      <MemberPageHeader icon={QrCode} title="Check-in" description="Show this to the front desk to check in" />
 
       {gymLinks.length === 0 ? (
         <Card>

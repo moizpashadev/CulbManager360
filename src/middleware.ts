@@ -8,13 +8,19 @@ export async function middleware(request: NextRequest) {
   // Me360 entry point — the shareable/marketing URL for the member app.
   // Accept any case (QR codes, printed material, etc. won't always be
   // lowercase) and always normalize to lowercase before routing onward.
+  // Preserves the query string (e.g. ?ref=... from referral links) across
+  // every hop — new URL(path, request.url) alone would silently drop it.
   if (pathname.toLowerCase() === "/me360") {
     if (pathname !== "/me360") {
-      return NextResponse.redirect(new URL("/me360", request.url))
+      const dest = new URL("/me360", request.url)
+      dest.search = request.nextUrl.search
+      return NextResponse.redirect(dest)
     }
     const memberToken = request.cookies.get(MEMBER_COOKIE_NAME)?.value
     const memberSession = memberToken ? await verifyMemberToken(memberToken) : null
-    return NextResponse.redirect(new URL(memberSession ? "/portal" : "/member-login", request.url))
+    const dest = new URL(memberSession ? "/portal" : "/member-login", request.url)
+    dest.search = request.nextUrl.search
+    return NextResponse.redirect(dest)
   }
 
   const isLogin     = pathname.startsWith("/login")

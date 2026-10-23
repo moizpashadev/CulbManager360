@@ -44,7 +44,9 @@ export function MemberPortalTopbar({ email }: { email: string }) {
           </Button>
         </div>
       </div>
-      <nav className="flex gap-1 overflow-x-auto px-4 pb-2">
+      {/* On mobile the bottom tab bar (MemberBottomNav) covers primary nav —
+          this strip is desktop/tablet only. */}
+      <nav className="hidden gap-1 overflow-x-auto px-4 pb-2 sm:flex">
         {NAV.map((item) => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href)
           return (

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma"
 import { getMemberSession } from "@/lib/member-auth/session"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { BookClassButton } from "@/components/book-class-button"
+import { MemberPageHeader } from "@/components/member-page-header"
 import { Calendar } from "lucide-react"
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -29,10 +30,7 @@ export default async function PortalClassesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Classes</h1>
-        <p className="text-sm text-muted-foreground">Book a spot in an upcoming class</p>
-      </div>
+      <MemberPageHeader icon={Calendar} title="Classes" description="Book a spot in an upcoming class" />
 
       {classes.length === 0 ? (
         <Card>
