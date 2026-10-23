@@ -3,6 +3,8 @@ import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import { InstallPrompt } from "@/components/install-prompt"
 
 export const metadata: Metadata = {
+  title: "Me360",
+  description: "Your gym membership, invoices, bookings and progress — in one place. Powered by Club Manager 360.",
   manifest: "/member-manifest.json",
   icons: {
     icon: "/icon.svg",
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Club Manager 360",
+    title: "Me360",
   },
 }
 

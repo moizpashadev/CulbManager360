@@ -68,7 +68,7 @@ export function InstallPrompt() {
 
   return (
     <div className="flex items-center justify-between gap-3 border-b bg-primary/5 px-4 py-2 text-sm">
-      <span className="text-foreground">Install Club Manager 360 for quick access</span>
+      <span className="text-foreground">Install Me360 for quick access</span>
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={install}>
           <Download className="mr-1.5 h-4 w-4" />

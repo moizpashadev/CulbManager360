@@ -37,7 +37,7 @@ export function InviteToPortalButton({ memberId }: Props) {
       className="flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors disabled:opacity-60"
     >
       <Send className="h-3.5 w-3.5" />
-      {loading ? "Sending…" : "Invite to Portal"}
+      {loading ? "Sending…" : "Invite to Me360"}
     </button>
   )
 }

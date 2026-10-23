@@ -1,7 +1,7 @@
 {
-  "name": "Club Manager 360",
-  "short_name": "CM360",
-  "description": "Your gym membership, invoices, bookings and progress — in one place.",
+  "name": "Me360",
+  "short_name": "Me360",
+  "description": "Your gym membership, invoices, bookings and progress — in one place. Powered by Club Manager 360.",
   "start_url": "/portal",
   "scope": "/",
   "display": "standalone",

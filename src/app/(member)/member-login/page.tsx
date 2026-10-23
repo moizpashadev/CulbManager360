@@ -78,13 +78,13 @@ export default function MemberLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-2 text-center">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
             <Dumbbell className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle>Member Login</CardTitle>
+          <CardTitle>Me360</CardTitle>
           <CardDescription>
             {step === "email"
               ? "Enter your email to get a login code"
@@ -159,6 +159,9 @@ export default function MemberLoginPage() {
           )}
         </CardContent>
       </Card>
+      <p className="absolute bottom-6 inset-x-0 text-center text-xs text-muted-foreground">
+        Powered by Club Manager 360
+      </p>
     </div>
   )
 }

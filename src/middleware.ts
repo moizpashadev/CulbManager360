@@ -5,6 +5,18 @@ import { verifyMemberToken, MEMBER_COOKIE_NAME } from "@/lib/member-auth/jwt"
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Me360 entry point — the shareable/marketing URL for the member app.
+  // Accept any case (QR codes, printed material, etc. won't always be
+  // lowercase) and always normalize to lowercase before routing onward.
+  if (pathname.toLowerCase() === "/me360") {
+    if (pathname !== "/me360") {
+      return NextResponse.redirect(new URL("/me360", request.url))
+    }
+    const memberToken = request.cookies.get(MEMBER_COOKIE_NAME)?.value
+    const memberSession = memberToken ? await verifyMemberToken(memberToken) : null
+    return NextResponse.redirect(new URL(memberSession ? "/portal" : "/member-login", request.url))
+  }
+
   const isLogin     = pathname.startsWith("/login")
   const isDashboard = pathname.startsWith("/dashboard")
   const isAdmin     = pathname.startsWith("/admin")
@@ -50,5 +62,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/login", "/portal/:path*", "/member-login"],
+  matcher: [
+    "/dashboard/:path*", "/admin/:path*", "/login", "/portal/:path*", "/member-login",
+    // Next.js matchers are literal/case-sensitive — list the capitalization
+    // the Me360 decision doc explicitly calls out ("redirect from /Me360").
+    // The middleware body also lowercases defensively for any other casing
+    // that happens to hit one of these two matched paths.
+    "/me360", "/Me360",
+  ],
 }
