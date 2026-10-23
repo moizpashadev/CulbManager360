@@ -1,7 +1,7 @@
 # Member Portal — Implementation Plan
 
-**Status:** Sprint 3 built and tested locally — **not yet deployed to production** (Sprints 1+2 are live; Sprint 3 is a local commit, deploy is the next step)
-**Last updated:** 2026-10-22
+**Status:** Sprint 3 complete — **deployed and verified live in production** (club360.meyvnlabs.com). All of Sprint 1, 2, and 3 are now live.
+**Last updated:** 2026-10-23
 
 **Scope decisions (2026-10-22, Sprint 3):**
 - **"Find your gym"** = search + request only. Member finds a gym and asks to be added; staff reviews and approves/rejects (`/dashboard/join-requests`). No open self-registration — a gym stays in control of who becomes a real `Member`, avoiding spam signups and members with no plan/payment set up.
