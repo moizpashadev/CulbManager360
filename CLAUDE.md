@@ -67,7 +67,7 @@ Second, independent login surface for gym *members* (not staff) — self-service
 - `CRON_SECRET` — bearer token required by `GET /api/cron/billing` and `GET /api/cron/member-reminders` (not in the sample `.env`; needed in production, e.g. via Vercel Cron).
 - `NEXT_PUBLIC_APP_URL` — public base URL, used to construct KuickPay webhook URLs shown to tenants and the member-portal invite-email link. **Verify this is actually a live URL after changing it** — production had this silently set to a dead `*.vercel.app` alias for an unknown period before being caught (2026-10-22) via a broken invite-email link, not via any build/deploy failure.
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL` — Resend transactional email, used for member OTP codes and portal invites. Sending domain `meyvnlabs.com` is verified.
-- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` — web push notification keys (generated via `web-push`'s `generateVAPIDKeys()`), set locally 2026-10-22, **not yet set in Vercel production env vars** — Sprint 3 hasn't been deployed yet.
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` — web push notification keys (generated via `web-push`'s `generateVAPIDKeys()`), set locally 2026-10-22 and in Vercel production env vars — Sprint 3 is deployed and live.
 
 ## Production Deployment
 
