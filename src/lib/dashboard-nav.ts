@@ -16,6 +16,7 @@ import {
   Settings,
   FileSpreadsheet,
   UserPlus,
+  Megaphone,
   type LucideIcon,
 } from "lucide-react"
 
@@ -85,6 +86,7 @@ export const navGroups: NavGroup[] = [
     label: "Administration",
     items: [
       { href: "/dashboard/join-requests",   label: "Join Requests",    icon: UserPlus,       roles: ["OWNER","ADMIN","MANAGER"] },
+      { href: "/dashboard/announcements",   label: "Announcements",    icon: Megaphone,      roles: ["OWNER","ADMIN","MANAGER"] },
       { href: "/dashboard/staff",           label: "Staff",            icon: UserCog,        roles: ["OWNER","ADMIN"] },
       { href: "/dashboard/reports",         label: "Reports",          icon: BarChart3,      roles: ["OWNER","ADMIN","MANAGER"] },
       { href: "/dashboard/reports/payments", label: "Payment Reports", icon: FileSpreadsheet, roles: ["OWNER","ADMIN","MANAGER"] },

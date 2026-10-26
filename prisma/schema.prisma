@@ -118,6 +118,7 @@ model Tenant {
   slotBookings      SlotBooking[]
   memberGymLinks    MemberGymLink[]
   memberJoinRequests MemberJoinRequest[]
+  announcements     Announcement[]
   platformPlan      PlatformPlan?       @relation(fields: [platformPlanId], references: [id])
 }
 
@@ -142,6 +143,7 @@ model Branch {
   assignments       TrainerMemberAssignment[]
   memberships       Membership[]
   invoices          Invoice[]
+  announcements     Announcement[]
 }
 
 // ─── MEMBER ────────────────────────────────────────────────────────────────
@@ -246,6 +248,37 @@ enum MemberJoinRequestStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+// ─── ANNOUNCEMENT (owner/staff → members, one-off push broadcast) ──────────
+// A staff-composed message pushed to a chosen audience of members. Distinct
+// from the automated member-reminders cron (class/court/payment/streak) —
+// this is manually triggered, one row per send, kept for history/audit.
+
+model Announcement {
+  id             String               @id @default(cuid())
+  tenantId       String
+  title          String
+  body           String
+  audience       AnnouncementAudience
+  branchId       String?
+  recipientCount Int                  @default(0)
+  sentCount      Int                  @default(0)
+  createdByStaffId String
+  createdAt      DateTime             @default(now())
+
+  tenant         Tenant  @relation(fields: [tenantId], references: [id])
+  branch         Branch? @relation(fields: [branchId], references: [id])
+  createdByStaff Staff   @relation(fields: [createdByStaffId], references: [id])
+
+  @@index([tenantId, createdAt])
+}
+
+enum AnnouncementAudience {
+  ALL
+  EXPIRING_SOON
+  OUTSTANDING_PAYMENT
+  BRANCH
 }
 
 // ─── MEMBER PUSH SUBSCRIPTION (web push) ────────────────────────────────────
@@ -472,6 +505,7 @@ model Staff {
   trainerAttendance TrainerAttendance[]
   progressEntries   ProgressEntry[]
   progressReports   ProgressReport[]
+  announcementsSent Announcement[]
 
   @@unique([tenantId, email])
 }
