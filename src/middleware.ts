@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyToken, COOKIE_NAME } from "@/lib/auth/jwt"
-import { verifyMemberToken, MEMBER_COOKIE_NAME } from "@/lib/member-auth/jwt"
+import {
+  verifyMemberToken,
+  signMemberToken,
+  shouldRenewMemberToken,
+  MEMBER_COOKIE_NAME,
+  MEMBER_COOKIE_MAX_AGE_SECONDS,
+} from "@/lib/member-auth/jwt"
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -61,7 +67,25 @@ export async function middleware(request: NextRequest) {
     if (isMemberLogin && memberSession) {
       return NextResponse.redirect(new URL("/portal", request.url))
     }
-    return NextResponse.next()
+
+    const response = NextResponse.next()
+    // Sliding session: silently reissue the cookie once it's past the
+    // halfway point of its life, so an active member never hits the
+    // 365-day hard expiry. Each device renews its own cookie independently
+    // on its own requests — nothing here ties sessions together, so this
+    // is also what makes "stay logged in on multiple devices" work with no
+    // extra device-tracking.
+    if (isPortal && memberSession && shouldRenewMemberToken(memberSession)) {
+      const fresh = await signMemberToken({ sub: memberSession.sub, email: memberSession.email })
+      response.cookies.set(MEMBER_COOKIE_NAME, fresh, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: MEMBER_COOKIE_MAX_AGE_SECONDS,
+        path: "/",
+      })
+    }
+    return response
   }
 
   return NextResponse.next()

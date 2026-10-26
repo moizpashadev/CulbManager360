@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { verifyOtpCode } from "@/lib/member-auth/otp"
-import { signMemberToken, MEMBER_COOKIE_NAME } from "@/lib/member-auth/jwt"
+import { signMemberToken, MEMBER_COOKIE_NAME, MEMBER_COOKIE_MAX_AGE_SECONDS } from "@/lib/member-auth/jwt"
 
 export async function POST(request: NextRequest) {
   const { email, code, ref } = await request.json()
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: MEMBER_COOKIE_MAX_AGE_SECONDS,
     path: "/",
   })
   return response
