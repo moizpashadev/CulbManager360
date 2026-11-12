@@ -2,8 +2,9 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth/session"
 import { prisma } from "@/lib/db/prisma"
 import { KuickpaySettingsForm } from "./kuickpay-settings-form"
+import { PaymentLinkForm } from "./payment-link-form"
 
-export default async function KuickpaySettingsPage() {
+export default async function PaymentMethodsPage() {
   const session = await getSession()
   if (!session) redirect("/login")
   if (!["OWNER", "ADMIN"].includes(session.role)) redirect("/dashboard")
@@ -16,22 +17,24 @@ export default async function KuickpaySettingsPage() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-foreground">Kuickpay BPS Integration</h1>
+        <h1 className="text-xl font-semibold text-foreground">Payment Methods</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Configure your gym&apos;s integration with Kuickpay Bill Payment System.
-          Share the endpoint URLs below with the Kuickpay onboarding team.
+          How your members can pay you. Kuickpay BPS is configured below — more methods coming soon.
         </p>
       </div>
 
-      {/* Endpoint URLs */}
+      {/* Kuickpay BPS */}
       <div className="rounded-lg border border-border bg-white shadow-sm">
         <div className="border-b border-border px-6 py-4">
-          <h2 className="text-sm font-semibold text-foreground">Your Merchant Endpoints</h2>
+          <h2 className="text-sm font-semibold text-foreground">Kuickpay BPS</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Provide these URLs to Kuickpay during onboarding. They will call these endpoints for bill lookups and payment confirmations.
+            Members pay through any bank app, JazzCash, or Easypaisa — marked paid automatically.
           </p>
         </div>
         <div className="divide-y divide-border">
+          <div className="p-6">
+            <KuickpaySettingsForm currentInstitutionId={tenant.kuickpayInstitutionId ?? ""} />
+          </div>
           <div className="px-6 py-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">
               Bill Inquiry URL
@@ -51,20 +54,26 @@ export default async function KuickpaySettingsPage() {
         </div>
       </div>
 
-      {/* Institution ID form */}
+      {/* Payment Link */}
       <div className="rounded-lg border border-border bg-white shadow-sm">
         <div className="border-b border-border px-6 py-4">
-          <h2 className="text-sm font-semibold text-foreground">Institution Configuration</h2>
+          <h2 className="text-sm font-semibold text-foreground">Payment Link</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Your Institution ID is provided by Kuickpay after onboarding. It is used in consumer number lookups.
+            Send a member a direct link to pay their bill — e.g. over WhatsApp from their invoice.
           </p>
         </div>
         <div className="p-6">
-          <KuickpaySettingsForm
-            tenantId={tenant.id}
-            currentInstitutionId={tenant.kuickpayInstitutionId ?? ""}
+          <PaymentLinkForm
+            hasInstitutionId={!!tenant.kuickpayInstitutionId}
+            currentEnabled={tenant.paymentLinkEnabled}
+            currentTemplate={tenant.paymentLinkTemplate ?? ""}
           />
         </div>
+      </div>
+
+      {/* More coming soon */}
+      <div className="rounded-lg border border-dashed border-border bg-muted/20 px-6 py-5 text-center">
+        <p className="text-sm text-muted-foreground">More payment methods coming soon.</p>
       </div>
 
       {/* How it works */}

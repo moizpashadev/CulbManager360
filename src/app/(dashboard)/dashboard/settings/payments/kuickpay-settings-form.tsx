@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-type Props = { tenantId: string; currentInstitutionId: string }
+type Props = { currentInstitutionId: string }
 
 export function KuickpaySettingsForm({ currentInstitutionId }: Props) {
   const [institutionId, setInstitutionId] = useState(currentInstitutionId)
@@ -14,7 +14,7 @@ export function KuickpaySettingsForm({ currentInstitutionId }: Props) {
     setSaving(true)
     setSaved(false)
     setError(null)
-    const res = await fetch("/api/settings/kuickpay", {
+    const res = await fetch("/api/settings/payments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kuickpayInstitutionId: institutionId }),

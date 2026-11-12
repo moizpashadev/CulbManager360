@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Smartphone } from "lucide-react"
 import { MarkPaidButton } from "../mark-paid-button"
 import { ReceiptActions } from "./receipt-actions"
+import { SendPaymentLinkButton } from "./send-payment-link-button"
+import { buildPaymentLink } from "@/lib/kuickpay-no"
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -38,6 +40,11 @@ export default async function InvoiceReceiptPage(props: Props) {
   const invoiceRef = invoice.id.slice(-8).toUpperCase()
   const amountLabel = fmt(invoice.total)
   const isPending = invoice.paymentStatus === "PENDING" || invoice.paymentStatus === "PARTIAL"
+  const memberPhoneForLink = invoice.member?.phone ?? invoice.slotBooking?.customerPhone ?? null
+  const paymentLink =
+    isPending && invoice.tenant.paymentLinkEnabled && invoice.tenant.paymentLinkTemplate && invoice.kuickpayConsumerNo && memberPhoneForLink
+      ? buildPaymentLink(invoice.tenant.paymentLinkTemplate, invoice.kuickpayConsumerNo)
+      : null
 
   return (
     <div className="max-w-2xl">
@@ -62,6 +69,16 @@ export default async function InvoiceReceiptPage(props: Props) {
             invoiceId={invoice.id}
             gymName={invoice.tenant.name}
           />
+          {paymentLink && (
+            <SendPaymentLinkButton
+              memberName={invoice.member
+                ? `${invoice.member.firstName} ${invoice.member.lastName}`
+                : invoice.slotBooking?.customerName ?? "there"}
+              memberPhone={memberPhoneForLink!}
+              paymentLink={paymentLink}
+              gymName={invoice.tenant.name}
+            />
+          )}
           {isPending && (
             <MarkPaidButton invoiceId={invoice.id} total={Number(invoice.total)} />
           )}

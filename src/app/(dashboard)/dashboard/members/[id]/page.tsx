@@ -11,6 +11,8 @@ import { CancelMembershipButton } from "./cancel-membership-button"
 import { MembershipPauseButton } from "./membership-pause-button"
 import { GenerateInvoiceButton } from "./generate-invoice-button"
 import { InviteToPortalButton } from "./invite-to-portal-button"
+import { AddFamilyMemberButton } from "./add-family-member-button"
+import { LogGuestVisitButton } from "./log-guest-visit-button"
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ assign?: string }> }
 
@@ -33,7 +35,7 @@ export default async function MemberProfilePage(props: Props) {
 
   const isNewMember = searchParams.assign === "true"
 
-  const [member, plans, branches] = await Promise.all([
+  const [member, plans, branches, tenant] = await Promise.all([
     prisma.member.findFirst({
       where: { id: params.id, tenantId: session.tenantId },
       include: {
@@ -49,6 +51,11 @@ export default async function MemberProfilePage(props: Props) {
           orderBy: { createdAt: "desc" },
           take: 10,
         },
+        familyHead: { select: { id: true, firstName: true, lastName: true } },
+        dependents: {
+          select: { id: true, firstName: true, lastName: true, status: true },
+          orderBy: { createdAt: "asc" },
+        },
       },
     }),
     prisma.membershipPlan.findMany({
@@ -59,6 +66,10 @@ export default async function MemberProfilePage(props: Props) {
       where: { tenantId: session.tenantId, isActive: true },
       orderBy: { name: "asc" },
       select: { id: true, name: true },
+    }),
+    prisma.tenant.findUnique({
+      where: { id: session.tenantId },
+      select: { defaultGuestFee: true },
     }),
   ])
 
@@ -84,6 +95,7 @@ export default async function MemberProfilePage(props: Props) {
           </div>
           <div className="flex items-center gap-3">
               <InviteToPortalButton memberId={member.id} />
+              <LogGuestVisitButton memberId={member.id} defaultFee={tenant?.defaultGuestFee ? Number(tenant.defaultGuestFee) : undefined} />
               <MemberQrButton memberId={member.id} memberName={`${member.firstName} ${member.lastName}`} memberPhone={member.phone} />
               <Link
                 href={`/dashboard/members/${member.id}/health`}
@@ -282,6 +294,41 @@ export default async function MemberProfilePage(props: Props) {
                 </div>
               )}
             </dl>
+          </div>
+
+          {/* Family */}
+          <div className="rounded-lg border border-border bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <h2 className="text-sm font-medium text-foreground">Family</h2>
+              {!member.familyHead && <AddFamilyMemberButton headMemberId={member.id} branches={branches} />}
+            </div>
+            <div className="p-6">
+              {member.familyHead ? (
+                <p className="text-sm text-foreground">
+                  Family head:{" "}
+                  <Link href={`/dashboard/members/${member.familyHead.id}`} className="text-primary hover:underline">
+                    {member.familyHead.firstName} {member.familyHead.lastName}
+                  </Link>
+                </p>
+              ) : member.dependents.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No family members added. Their membership is covered under {member.firstName}&apos;s plan — no separate charge.
+                </p>
+              ) : (
+                <ul className="divide-y divide-border -mx-6 -my-6">
+                  {member.dependents.map((d) => (
+                    <li key={d.id} className="px-6 py-3">
+                      <Link href={`/dashboard/members/${d.id}`} className="text-sm font-medium text-foreground hover:text-primary">
+                        {d.firstName} {d.lastName}
+                      </Link>
+                      <Badge variant={statusColors[d.status] ?? "secondary"} className="ml-2">
+                        {d.status}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           {/* Recent check-ins */}

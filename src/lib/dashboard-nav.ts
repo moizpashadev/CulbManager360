@@ -97,7 +97,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { href: "/dashboard/settings/general",    label: "General",      icon: Settings, roles: ["OWNER","ADMIN"] },
       { href: "/dashboard/settings/facilities", label: "Facilities",   icon: Sparkles, roles: ["OWNER","ADMIN"], module: "gym" },
-      { href: "/dashboard/settings/kuickpay",   label: "Kuickpay BPS", icon: Zap,      roles: ["OWNER","ADMIN"] },
+      { href: "/dashboard/settings/payments",   label: "Payment Methods", icon: Zap,   roles: ["OWNER","ADMIN"] },
     ],
   },
 ]

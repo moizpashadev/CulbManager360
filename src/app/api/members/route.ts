@@ -25,23 +25,51 @@ export async function POST(request: NextRequest) {
   const {
     firstName, lastName, email, phone, cnic,
     dateOfBirth, emergencyContact, emergencyPhone, medicalNotes,
-    branchId, registrationFee, registrationPaymentMethod,
+    branchId, registrationFee, registrationPaymentMethod, familyHeadId,
   } = body
 
-  if (!firstName || !lastName || !email) {
-    return NextResponse.json({ error: "firstName, lastName and email are required" }, { status: 400 })
+  if (!firstName || !lastName) {
+    return NextResponse.json({ error: "firstName and lastName are required" }, { status: 400 })
+  }
+  // Dependents (family members) often don't have their own email — only
+  // require one for a regular, standalone member.
+  if (!familyHeadId && !email) {
+    return NextResponse.json({ error: "email is required" }, { status: 400 })
   }
 
   try {
+    let resolvedFamilyHeadId: string | null = null
+    if (familyHeadId) {
+      const head = await prisma.member.findFirst({
+        where: { id: familyHeadId, tenantId: session.tenantId },
+        select: { id: true, familyHeadId: true },
+      })
+      if (!head) {
+        return NextResponse.json({ error: "Family head not found" }, { status: 400 })
+      }
+      if (head.familyHeadId) {
+        return NextResponse.json({ error: "A dependent can't have dependents of their own" }, { status: 400 })
+      }
+      resolvedFamilyHeadId = head.id
+    }
+
     const existingCount = await prisma.member.count({ where: { tenantId: session.tenantId } })
     const consumerNumber = String(existingCount + 1).padStart(7, "0")
+
+    // A dependent with no email of their own gets a unique, clearly-fake
+    // placeholder so the tenantId+email uniqueness constraint is satisfied
+    // without asking front-desk staff to invent an address for a child.
+    const resolvedEmail = email
+      ? (email as string).toLowerCase().trim()
+      : `family-${crypto.randomUUID()}@noemail.local`
 
     const member = await prisma.member.create({
       data: {
         tenantId: session.tenantId,
+        familyHeadId: resolvedFamilyHeadId,
         firstName,
         lastName,
-        email: (email as string).toLowerCase().trim(),
+        email: resolvedEmail,
         phone: phone ?? null,
         cnic: cnic ?? null,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,

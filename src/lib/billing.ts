@@ -25,7 +25,19 @@ export async function runBillingCycle() {
 
   for (const tenant of dueTenants) {
     const plan = tenant.platformPlan
-    if (!plan?.monthlyPrice) continue // one-time/offline plans don't get recurring invoices
+    if (!plan) continue
+
+    let amount: number
+    if (plan.billingMode === "PER_MEMBER") {
+      if (!plan.pricePerMember) continue // per-member plan not fully configured yet
+      const activeMemberCount = await prisma.member.count({
+        where: { tenantId: tenant.id, status: "ACTIVE" },
+      })
+      amount = Number(plan.pricePerMember) * activeMemberCount
+    } else {
+      if (!plan.monthlyPrice) continue // one-time/offline plans don't get recurring invoices
+      amount = Number(plan.monthlyPrice)
+    }
 
     const periodStart = tenant.nextBillingDate ?? now
     const periodEnd = addMonths(periodStart, 1)
@@ -35,7 +47,7 @@ export async function runBillingCycle() {
         data: {
           tenantId: tenant.id,
           platformPlanId: plan.id,
-          amount: plan.monthlyPrice,
+          amount,
           periodStart,
           periodEnd,
           dueDate: periodStart,

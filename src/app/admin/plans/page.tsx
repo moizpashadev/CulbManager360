@@ -87,13 +87,22 @@ export default async function AdminPlansPage() {
                     <span className="text-xs text-muted-foreground">one-time</span>
                   </div>
                 )}
-                {plan.monthlyPrice != null && (
+                {plan.billingMode === "PER_MEMBER" && plan.pricePerMember != null ? (
                   <div className="flex items-baseline gap-2">
                     <span className="font-mono text-2xl font-bold text-primary">
-                      {fmt(plan.monthlyPrice)}
+                      {fmt(plan.pricePerMember)}
                     </span>
-                    <span className="text-xs text-muted-foreground">/ month</span>
+                    <span className="text-xs text-muted-foreground">/ member / month</span>
                   </div>
+                ) : (
+                  plan.monthlyPrice != null && (
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-mono text-2xl font-bold text-primary">
+                        {fmt(plan.monthlyPrice)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">/ month</span>
+                    </div>
+                  )
                 )}
 
                 {plan.features && (

@@ -22,17 +22,22 @@ model SuperAdmin {
 // ─── PLATFORM SUBSCRIPTION PLANS ───────────────────────────────────────────
 
 model PlatformPlan {
-  id           String           @id @default(cuid())
-  name         String
-  type         PlatformPlanType
-  description  String?
-  oneTimePrice Decimal?         @db.Decimal(10, 2)
-  monthlyPrice Decimal?         @db.Decimal(10, 2)
-  features     String?
-  isActive     Boolean          @default(true)
-  sortOrder    Int              @default(0)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id             String            @id @default(cuid())
+  name           String
+  type           PlatformPlanType
+  description    String?
+  oneTimePrice   Decimal?          @db.Decimal(10, 2)
+  monthlyPrice   Decimal?          @db.Decimal(10, 2)
+  // Per-member billing: when set to PER_MEMBER, the recurring invoice
+  // amount is computed at billing time as pricePerMember × the tenant's
+  // active member count, instead of using the flat monthlyPrice above.
+  billingMode    PlatformBillingMode @default(FLAT)
+  pricePerMember Decimal?          @db.Decimal(10, 2)
+  features       String?
+  isActive       Boolean           @default(true)
+  sortOrder      Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   tenants          Tenant[]
   platformInvoices PlatformInvoice[]
@@ -42,6 +47,11 @@ enum PlatformPlanType {
   OFFLINE
   SELF_HOSTED
   SAAS
+}
+
+enum PlatformBillingMode {
+  FLAT
+  PER_MEMBER
 }
 
 enum SubscriptionStatus {
@@ -91,6 +101,17 @@ model Tenant {
   address      String?
   isActive              Boolean  @default(true)
   kuickpayInstitutionId String?
+  // Payment Link: a configurable URL template members can be sent (e.g.
+  // via WhatsApp) to pay their KuickPay bill directly, e.g.
+  // "https://payments.kuickpay.com/inquiry?cn={cn}" — {cn} is substituted
+  // per-member with their built KuickPay consumer number at send time.
+  paymentLinkEnabled  Boolean  @default(false)
+  paymentLinkTemplate String?
+  // Default fee charged when a member brings in an outside guest — just a
+  // convenience prefill for the "Log Guest Visit" form, still editable per
+  // visit; no separate guest-management table, each visit is just a
+  // GUEST_FEE Invoice billed to the host member.
+  defaultGuestFee       Decimal? @db.Decimal(10, 2)
   // Module flags — control which features/sidebar items are visible
   moduleGym             Boolean  @default(true)
   moduleCourts          Boolean  @default(false)
@@ -152,6 +173,7 @@ model Member {
   id               String       @id @default(cuid())
   tenantId         String
   branchId         String?
+  familyHeadId     String?
   firstName        String
   lastName         String
   email            String
@@ -170,6 +192,12 @@ model Member {
 
   tenant          Tenant                    @relation(fields: [tenantId], references: [id])
   branch          Branch?                   @relation(fields: [branchId], references: [id])
+  // Club/family membership: a dependent (spouse/child) is a full Member row
+  // of its own (own QR/attendance/health) but points at the paying head —
+  // billing (Membership/Invoice) stays on the head only, dependents never
+  // get their own.
+  familyHead      Member?                   @relation("FamilyMembers", fields: [familyHeadId], references: [id], onDelete: SetNull)
+  dependents      Member[]                  @relation("FamilyMembers")
   memberships     Membership[]
   attendance      Attendance[]
   bookings        ClassBooking[]
@@ -182,6 +210,7 @@ model Member {
   gymLinks        MemberGymLink[]
 
   @@unique([tenantId, email])
+  @@index([familyHeadId])
   @@unique([tenantId, consumerNumber])
 }
 
@@ -436,6 +465,7 @@ enum InvoiceType {
   RENEWAL
   OTHER
   COURT_BOOKING
+  GUEST_FEE
 }
 
 enum PaymentStatus {

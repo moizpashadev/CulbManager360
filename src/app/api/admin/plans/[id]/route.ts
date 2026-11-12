@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest, props: Params) {
   if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 })
 
   const body = await request.json()
-  const { name, type, description, oneTimePrice, monthlyPrice, features, isActive, sortOrder } = body
+  const { name, type, description, oneTimePrice, monthlyPrice, billingMode, pricePerMember, features, isActive, sortOrder } = body
 
   const updated = await prisma.platformPlan.update({
     where: { id: params.id },
@@ -23,6 +23,8 @@ export async function PUT(request: NextRequest, props: Params) {
       description: description !== undefined ? description : plan.description,
       oneTimePrice: oneTimePrice !== undefined ? oneTimePrice : plan.oneTimePrice,
       monthlyPrice: monthlyPrice !== undefined ? monthlyPrice : plan.monthlyPrice,
+      billingMode: billingMode ?? plan.billingMode,
+      pricePerMember: pricePerMember !== undefined ? pricePerMember : plan.pricePerMember,
       features: features !== undefined ? features : plan.features,
       isActive: isActive !== undefined ? isActive : plan.isActive,
       sortOrder: sortOrder !== undefined ? sortOrder : plan.sortOrder,

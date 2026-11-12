@@ -24,3 +24,11 @@ export function buildKuickpayConsumerNo(
   const ts = Date.now().toString().slice(-9)
   return `${p}9${ts}`
 }
+
+/**
+ * Substitutes a member's consumer number into a tenant-configured Payment
+ * Link template, e.g. "https://payments.kuickpay.com/inquiry?cn={cn}".
+ */
+export function buildPaymentLink(template: string, consumerNo: string): string {
+  return template.replace("{cn}", consumerNo)
+}

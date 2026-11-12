@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db/prisma"
 import { getSession } from "@/lib/auth/session"
+import { buildKuickpayConsumerNo } from "@/lib/kuickpay-no"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -11,9 +12,10 @@ export async function POST(request: NextRequest, props: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const member = await prisma.member.findFirst({
-    where: { id: params.id, tenantId: session.tenantId },
-  })
+  const [member, tenant] = await Promise.all([
+    prisma.member.findFirst({ where: { id: params.id, tenantId: session.tenantId } }),
+    prisma.tenant.findUnique({ where: { id: session.tenantId }, select: { kuickpayInstitutionId: true } }),
+  ])
   if (!member) return NextResponse.json({ error: "Member not found" }, { status: 404 })
 
   const body = await request.json()
@@ -108,6 +110,7 @@ export async function POST(request: NextRequest, props: Params) {
         paymentStatus: paymentMethod ? "PAID" : "PENDING",
         paymentMethod: paymentMethod || null,
         paidAt: paymentMethod ? new Date() : null,
+        kuickpayConsumerNo: buildKuickpayConsumerNo(tenant?.kuickpayInstitutionId, member.consumerNumber),
       },
     })
 

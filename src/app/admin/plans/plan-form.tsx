@@ -9,6 +9,8 @@ type PlanFormData = {
   description: string
   oneTimePrice: string
   monthlyPrice: string
+  billingMode: "FLAT" | "PER_MEMBER"
+  pricePerMember: string
   features: string
   isActive: boolean
   sortOrder: string
@@ -35,6 +37,8 @@ export function PlanForm({ planId, defaultValues }: Props) {
     description: defaultValues?.description ?? "",
     oneTimePrice: defaultValues?.oneTimePrice ?? "",
     monthlyPrice: defaultValues?.monthlyPrice ?? "",
+    billingMode: defaultValues?.billingMode ?? "FLAT",
+    pricePerMember: defaultValues?.pricePerMember ?? "",
     features: defaultValues?.features ?? "",
     isActive: defaultValues?.isActive ?? true,
     sortOrder: defaultValues?.sortOrder ?? "0",
@@ -49,7 +53,9 @@ export function PlanForm({ planId, defaultValues }: Props) {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name.trim()) { setError("Plan name is required"); return }
-    if (!form.oneTimePrice && !form.monthlyPrice) {
+    if (form.billingMode === "PER_MEMBER") {
+      if (!form.pricePerMember) { setError("Price per member is required for per-member billing"); return }
+    } else if (!form.oneTimePrice && !form.monthlyPrice) {
       setError("At least one price (one-time or monthly) is required")
       return
     }
@@ -62,6 +68,8 @@ export function PlanForm({ planId, defaultValues }: Props) {
       description: form.description.trim() || null,
       oneTimePrice: form.oneTimePrice ? parseFloat(form.oneTimePrice) : null,
       monthlyPrice: form.monthlyPrice ? parseFloat(form.monthlyPrice) : null,
+      billingMode: form.billingMode,
+      pricePerMember: form.pricePerMember ? parseFloat(form.pricePerMember) : null,
       features: form.features.trim() || null,
       isActive: form.isActive,
       sortOrder: parseInt(form.sortOrder) || 0,
@@ -146,6 +154,37 @@ export function PlanForm({ planId, defaultValues }: Props) {
         />
       </div>
 
+      {/* Billing mode */}
+      <div>
+        <label className="mb-2 block text-sm font-semibold text-foreground">Recurring Billing</label>
+        <div className="grid grid-cols-2 gap-3">
+          {([
+            { value: "FLAT" as const, label: "Flat Monthly", desc: "Same price every month, regardless of member count" },
+            { value: "PER_MEMBER" as const, label: "Per Member", desc: "Price × how many active members the gym has" },
+          ]).map((opt) => (
+            <label
+              key={opt.value}
+              className={`flex cursor-pointer flex-col gap-1 rounded-lg border-2 p-4 transition-colors ${
+                form.billingMode === opt.value
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-white hover:border-primary/40"
+              }`}
+            >
+              <input
+                type="radio"
+                name="billingMode"
+                value={opt.value}
+                checked={form.billingMode === opt.value}
+                onChange={() => set("billingMode", opt.value)}
+                className="sr-only"
+              />
+              <span className="text-sm font-semibold text-foreground">{opt.label}</span>
+              <span className="text-xs text-muted-foreground">{opt.desc}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* Pricing */}
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -163,21 +202,41 @@ export function PlanForm({ planId, defaultValues }: Props) {
             className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-foreground">
-            Monthly Price (PKR)
-            <span className="ml-1 text-xs text-muted-foreground">(for SaaS / recurring)</span>
-          </label>
-          <input
-            type="number"
-            value={form.monthlyPrice}
-            onChange={(e) => set("monthlyPrice", e.target.value)}
-            min={0}
-            step={100}
-            placeholder="e.g. 4000"
-            className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
+        {form.billingMode === "PER_MEMBER" ? (
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              Price Per Member (PKR / month)
+            </label>
+            <input
+              type="number"
+              value={form.pricePerMember}
+              onChange={(e) => set("pricePerMember", e.target.value)}
+              min={0}
+              step={5}
+              placeholder="e.g. 50"
+              className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              e.g. 50/member → a 100-member gym is billed PKR 5,000/month.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              Monthly Price (PKR)
+              <span className="ml-1 text-xs text-muted-foreground">(for SaaS / recurring)</span>
+            </label>
+            <input
+              type="number"
+              value={form.monthlyPrice}
+              onChange={(e) => set("monthlyPrice", e.target.value)}
+              min={0}
+              step={100}
+              placeholder="e.g. 4000"
+              className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+        )}
       </div>
 
       {/* Features */}

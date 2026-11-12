@@ -32,6 +32,8 @@ export default async function EditPlanPage(props: { params: Promise<{ id: string
             description: plan.description ?? "",
             oneTimePrice: plan.oneTimePrice != null ? String(plan.oneTimePrice) : "",
             monthlyPrice: plan.monthlyPrice != null ? String(plan.monthlyPrice) : "",
+            billingMode: plan.billingMode,
+            pricePerMember: plan.pricePerMember != null ? String(plan.pricePerMember) : "",
             features: plan.features ?? "",
             isActive: plan.isActive,
             sortOrder: String(plan.sortOrder),
