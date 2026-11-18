@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { UserPlus, Download } from "lucide-react"
+import { BulkImportMembersButton } from "@/components/bulk-import-members-button"
 import { MembersSearch } from "./members-search"
 import { Suspense } from "react"
 import { Pagination } from "@/components/pagination"
@@ -99,6 +100,7 @@ export default async function MembersPage(
               Add Member
             </Button>
           </Link>
+          <BulkImportMembersButton endpoint="/api/members/bulk-import" />
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft, Building2, Users, UserCog, CreditCard, MapPin } from "lucide-react"
 import { SubscriptionForm } from "./subscription-form"
 import { AddStaffForm } from "./add-staff-form"
+import { BulkImportMembersButton } from "@/components/bulk-import-members-button"
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ q?: string; status?: string }> }
 
@@ -137,6 +138,7 @@ export default async function AdminTenantDetailPage(props: Props) {
               {q ? ` for "${q}"` : ""}
             </p>
           </div>
+          <BulkImportMembersButton endpoint={`/api/admin/tenants/${params.id}/bulk-import`} />
           {/* Search */}
           <form method="GET" className="flex flex-wrap items-center gap-2">
             <input
