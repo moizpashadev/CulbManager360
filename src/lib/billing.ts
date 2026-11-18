@@ -27,20 +27,30 @@ export async function runBillingCycle() {
     const plan = tenant.platformPlan
     if (!plan) continue
 
+    const periodStart = tenant.nextBillingDate ?? now
+    const periodEnd = addMonths(periodStart, 1)
+
     let amount: number
     if (plan.billingMode === "PER_MEMBER") {
       if (!plan.pricePerMember) continue // per-member plan not fully configured yet
       const activeMemberCount = await prisma.member.count({
         where: { tenantId: tenant.id, status: "ACTIVE" },
       })
-      amount = Number(plan.pricePerMember) * activeMemberCount
+      // Guests count as billable "members" too, for the month just ending
+      // (the one this invoice is being raised for) — e.g. 50 members + 5
+      // guest visits last month bills as 55 × price.
+      const guestVisitCount = await prisma.invoice.count({
+        where: {
+          tenantId: tenant.id,
+          type: "GUEST_FEE",
+          createdAt: { gte: addMonths(periodStart, -1), lt: periodStart },
+        },
+      })
+      amount = Number(plan.pricePerMember) * (activeMemberCount + guestVisitCount)
     } else {
       if (!plan.monthlyPrice) continue // one-time/offline plans don't get recurring invoices
       amount = Number(plan.monthlyPrice)
     }
-
-    const periodStart = tenant.nextBillingDate ?? now
-    const periodEnd = addMonths(periodStart, 1)
 
     await prisma.$transaction([
       prisma.platformInvoice.create({
