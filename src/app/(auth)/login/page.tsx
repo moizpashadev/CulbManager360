@@ -310,6 +310,25 @@ export default function LoginPage() {
           style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.7) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.7) 1px,transparent 1px)", backgroundSize: "48px 48px" }}
         />
 
+        {/* pulse ring — flat stroke only (no gradient/glow fill), literally a
+            pulse echoing outward: the brand idea as a page element, not just
+            a logo mark */}
+        {[0, 1.3, 2.6].map((delay) => (
+          <motion.div key={delay}
+            className="pointer-events-none absolute rounded-full"
+            style={{
+              width: 560, height: 560, top: "8%", right: "-12%",
+              border: "1px solid #12B886",
+            }}
+            initial={{ opacity: 0.5, scale: 0.3 }}
+            animate={{ opacity: 0, scale: 1 }}
+            transition={{ duration: 3.9, delay, repeat: Infinity, ease: "easeOut" }}
+          />
+        ))}
+        <div className="pointer-events-none absolute rounded-full"
+          style={{ width: 560, height: 560, top: "8%", right: "-12%", border: "1px solid rgba(18,184,134,0.12)" }}
+        />
+
         {/* logo */}
         <motion.div className="relative mb-10 flex items-center gap-3"
           initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
@@ -351,9 +370,9 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
         >
-          <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white">
-            Run your gym<br />
-            <span style={{ color: "#12B886" }}>smarter, not harder.</span>
+          <h1 className="text-4xl leading-tight tracking-tight text-white">
+            <span className="font-light">Every member.</span><br />
+            <span className="font-extrabold" style={{ color: "#12B886" }}>One pulse.</span>
           </h1>
           <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
             Members · Billing · Attendance · Courts — all in one place.
