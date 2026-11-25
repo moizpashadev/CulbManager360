@@ -12,8 +12,13 @@
     --color-bg: #FFFFFF;
     --color-surface: #F6F7F9;
     --color-border: #E4E6EA;
-    --color-text: #0B0D12;
+    /* Softened from true ink (#0B0D12) specifically for reading text —
+       pure near-black body copy on white reads harsh at length. True ink
+       is kept for dark surface fills (topbar, etc.) via --color-ink below,
+       decoupled from this so backgrounds stay as designed. */
+    --color-text: #1A1D21;
     --color-text-muted: #5A606B;
+    --color-ink: #0B0D12;
     --color-primary: #12B886;
     --color-primary-hover: #0FA376;
     --color-primary-text: #0A7A57;
@@ -55,8 +60,9 @@
     --warning: var(--color-warning);
     --warning-foreground: var(--color-text);
 
-    /* Topbar */
-    --topbar: var(--color-text);
+    /* Topbar — stays true ink regardless of --color-text (reading-text
+       softening above shouldn't lighten this dark surface) */
+    --topbar: var(--color-ink);
     --topbar-foreground: var(--color-on-primary);
   }
 

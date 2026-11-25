@@ -334,9 +334,8 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/mp360-wordmark-color-dark.svg" alt="MP360" className="h-7 w-auto" />
-          <span className="rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest"
-            style={{ background: "#14171E", border: "1px solid #252A33", color: "#2FCB9A" }}>
+          <img src="/brand/mp360-wordmark-color-dark.svg" alt="MP360" className="h-8 w-auto" />
+          <span className="text-2xl font-extrabold tracking-tight text-white">
             Member Pulse
           </span>
         </motion.div>
