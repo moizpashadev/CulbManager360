@@ -38,7 +38,7 @@ export default async function SuperAdminsPage() {
       <div className="mb-5 flex items-start gap-3 rounded-lg border border-primary/20 bg-secondary/60 px-4 py-3">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <p className="text-sm text-foreground">
-          Super Admins have full access to the Club Manager 360 platform — they can create and manage all gyms.
+          Super Admins have full access to the MP360 platform — they can create and manage all gyms.
           Only add people you fully trust.
         </p>
       </div>

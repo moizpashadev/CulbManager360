@@ -33,9 +33,9 @@ function DashboardContent({ phase }: { phase: number }) {
     <div style={{ fontFamily: "system-ui, sans-serif", color: "#0f172a", fontSize: 9.5, background: "#f8fafc", userSelect: "none" }}>
 
       {/* topbar */}
-      <div style={{ background: "#0a8f5c", padding: "5px 10px", display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ background: "#12B886", padding: "5px 10px", display: "flex", alignItems: "center", gap: 6 }}>
         <Dumbbell size={9} color="white" />
-        <span style={{ color: "white", fontWeight: 700, fontSize: 9 }}>Club Manager 360</span>
+        <span style={{ color: "white", fontWeight: 700, fontSize: 9 }}>MP360</span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
           {["Members","Billing","Attendance","Reports"].map(t => (
             <span key={t} style={{ color: "rgba(255,255,255,0.65)", fontSize: 7.5, padding: "1.5px 5px", borderRadius: 3 }}>{t}</span>
@@ -120,7 +120,7 @@ function DashboardContent({ phase }: { phase: number }) {
         <span style={{ fontSize: 7, color: "#64748b", fontWeight: 600 }}>Live Attendance</span>
         <div style={{ display: "flex", gap: 3 }}>
           {["AK","SM","FS","BA"].map(init => (
-            <div key={init} style={{ width: 16, height: 16, borderRadius: "50%", background: "#dcfce7", color: "#0a8f5c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 5.5, fontWeight: 700, border: "1px solid #bbf7d0" }}>{init}</div>
+            <div key={init} style={{ width: 16, height: 16, borderRadius: "50%", background: "#E7F8F2", color: "#0A7A57", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 5.5, fontWeight: 700, border: "1px solid #bfe9da" }}>{init}</div>
           ))}
           <span style={{ fontSize: 7, color: "#94a3b8", alignSelf: "center" }}>+34 today</span>
         </div>
@@ -162,10 +162,10 @@ function BrowserMockup({ phase }: { phase: number }) {
         }
         style={{ transformStyle: "preserve-3d", position: "relative" }}
       >
-        {/* shadow glow */}
+        {/* depth shadow — flat, no colored glow */}
         <div style={{
           position: "absolute", inset: -1, borderRadius: 13, pointerEvents: "none",
-          boxShadow: "0 0 40px rgba(10,143,92,0.12), 0 40px 80px rgba(0,0,0,0.5)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
         }} />
 
         {/* frame */}
@@ -195,7 +195,7 @@ function BrowserMockup({ phase }: { phase: number }) {
               fontSize: 7.5, color: "rgba(255,255,255,0.4)",
               textAlign: "center", fontFamily: "monospace", letterSpacing: "0.02em",
             }}>
-              app.clubmanager360.com/dashboard
+              app.mp360.io/dashboard
             </div>
             <div style={{ width: 36 }} />
           </div>
@@ -214,13 +214,13 @@ function BrowserMockup({ phase }: { phase: number }) {
               style={{
                 position: "absolute", bottom: -10, right: -20,
                 background: "white",
-                border: "1px solid #e2e8f0", borderLeft: "3px solid #0a8f5c",
+                border: "1px solid #e2e8f0", borderLeft: "3px solid #12B886",
                 borderRadius: 9, padding: "7px 11px",
                 boxShadow: "0 8px 28px rgba(0,0,0,0.18)",
                 display: "flex", alignItems: "center", gap: 8, minWidth: 162,
               }}
             >
-              <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#f0fdf4", color: "#0a8f5c", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>✓</div>
+              <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#E7F8F2", color: "#0A7A57", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>✓</div>
               <div>
                 <div style={{ fontSize: 9.5, fontWeight: 700, color: "#0f172a", fontFamily: "system-ui" }}>Check-in</div>
                 <div style={{ fontSize: 8.5, color: "#64748b", fontFamily: "system-ui" }}>Zara Hussain — just now</div>
@@ -303,23 +303,9 @@ export default function LoginPage() {
       {/* ══════ LEFT ══════ */}
       <div
         className="relative hidden overflow-hidden lg:flex lg:w-[55%] flex-col py-10 px-10"
-        style={{ background: "linear-gradient(145deg, #0d1117 0%, #0e1a14 50%, #0c1520 100%)" }}
+        style={{ background: "#0B0D12" }}
       >
-        {/* ambient orbs */}
-        {[
-          { w: 400, h: 400, top: "-15%", left: "-8%",  delay: 0,   dur: 14 },
-          { w: 240, h: 240, top: "60%",  left: "60%",  delay: 3,   dur: 17 },
-          { w: 160, h: 160, top: "20%",  left: "72%",  delay: 1.5, dur: 11 },
-        ].map((o, i) => (
-          <motion.div key={i} className="pointer-events-none absolute rounded-full"
-            style={{ width: o.w, height: o.h, top: o.top, left: o.left,
-              background: "radial-gradient(circle, rgba(10,143,92,0.09) 0%, rgba(10,143,92,0) 70%)" }}
-            animate={{ scale: [1, 1.13, 1], opacity: [0.45, 0.9, 0.45] }}
-            transition={{ duration: o.dur, delay: o.delay, repeat: Infinity, ease: "easeInOut" }}
-          />
-        ))}
-
-        {/* grid */}
+        {/* grid — flat, no gradients/glows per brand */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.025]"
           style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.7) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.7) 1px,transparent 1px)", backgroundSize: "48px 48px" }}
         />
@@ -328,17 +314,11 @@ export default function LoginPage() {
         <motion.div className="relative mb-10 flex items-center gap-3"
           initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
         >
-          <motion.div className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ background: "rgba(10,143,92,0.15)", border: "1px solid rgba(10,143,92,0.3)" }}
-            animate={{ boxShadow: ["0 0 0px rgba(10,143,92,0)","0 0 18px rgba(10,143,92,0.4)","0 0 0px rgba(10,143,92,0)"] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Dumbbell className="h-4 w-4" style={{ color: "#0a8f5c" }} />
-          </motion.div>
-          <span className="text-[17px] font-bold tracking-tight text-white">Club Manager 360</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/mp360-wordmark-color-dark.svg" alt="MP360" className="h-7 w-auto" />
           <span className="rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest"
-            style={{ background: "rgba(10,143,92,0.15)", border: "1px solid rgba(10,143,92,0.3)", color: "#4cd4a0" }}>
-            Gym SaaS
+            style={{ background: "#14171E", border: "1px solid #252A33", color: "#2FCB9A" }}>
+            Member Pulse
           </span>
         </motion.div>
 
@@ -354,8 +334,8 @@ export default function LoginPage() {
                 transition={{ duration: 0.45, delay: 0.7 + i * 0.08, ease: "easeOut" }}
               >
                 <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
-                  style={{ background: "rgba(10,143,92,0.15)" }}>
-                  <Icon size={12} style={{ color: "#4cd4a0" }} />
+                  style={{ background: "#14171E" }}>
+                  <Icon size={12} style={{ color: "#2FCB9A" }} />
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-white leading-tight">{label}</p>
@@ -373,7 +353,7 @@ export default function LoginPage() {
         >
           <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white">
             Run your gym<br />
-            <span style={{ color: "#18b077" }}>smarter, not harder.</span>
+            <span style={{ color: "#12B886" }}>smarter, not harder.</span>
           </h1>
           <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
             Members · Billing · Attendance · Courts — all in one place.
@@ -383,23 +363,21 @@ export default function LoginPage() {
         <motion.p className="relative mt-5 text-[10px]" style={{ color: "rgba(255,255,255,0.18)" }}
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
         >
-          Club Manager 360 · Pakistan · 2026
+          MP360 · Pakistan · 2026
         </motion.p>
       </div>
 
       {/* ══════ RIGHT — login form ══════ */}
       <div
         className="relative flex w-full flex-col lg:w-[45%]"
-        style={{ background: "#f5f3ef" }}
+        style={{ background: "#F6F7F9" }}
       >
         {/* mobile logo bar */}
-        <div className="flex items-center gap-2.5 border-b px-6 py-4 lg:hidden"
-          style={{ background: "#0d1117", borderColor: "rgba(10,143,92,0.3)" }}
+        <div className="flex items-center px-6 py-4 lg:hidden"
+          style={{ background: "#0B0D12", borderBottom: "1px solid #252A33" }}
         >
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: "rgba(10,143,92,0.2)" }}>
-            <Dumbbell className="h-4 w-4" style={{ color: "#4cd4a0" }} />
-          </div>
-          <span className="text-[15px] font-bold tracking-tight text-white">Club Manager 360</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/mp360-wordmark-color-dark.svg" alt="MP360" className="h-5 w-auto" />
         </div>
 
         <div className="flex flex-1 items-center justify-center px-10 py-12">
@@ -435,7 +413,7 @@ export default function LoginPage() {
                 <input
                   id="email" name="email" type="email" autoComplete="email"
                   placeholder="admin@yourgym.com" required
-                  className="block w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-[#0a8f5c] focus:outline-none focus:ring-2 focus:ring-[#0a8f5c]/20 transition-colors"
+                  className="block w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-[#12B886] focus:outline-none focus:ring-2 focus:ring-[#12B886]/20 transition-colors"
                 />
               </div>
 
@@ -450,7 +428,7 @@ export default function LoginPage() {
                     type={showPass ? "text" : "password"}
                     autoComplete="current-password"
                     placeholder="••••••••" required
-                    className="block w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-11 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-[#0a8f5c] focus:outline-none focus:ring-2 focus:ring-[#0a8f5c]/20 transition-colors"
+                    className="block w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-11 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-[#12B886] focus:outline-none focus:ring-2 focus:ring-[#12B886]/20 transition-colors"
                   />
                   <button
                     type="button"
@@ -468,7 +446,7 @@ export default function LoginPage() {
                 <label className="flex cursor-pointer items-center gap-2.5" onClick={() => setRemember(v => !v)}>
                   <div style={{
                     width: 18, height: 18, borderRadius: 4, cursor: "pointer", flexShrink: 0,
-                    background: remember ? "#0a8f5c" : "white",
+                    background: remember ? "#12B886" : "white",
                     border: remember ? "none" : "2px solid #d1d5db",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "background 0.15s",
@@ -481,7 +459,7 @@ export default function LoginPage() {
                   </div>
                   <span className="text-sm text-gray-600 select-none">Remember me</span>
                 </label>
-                <span className="cursor-default text-sm font-medium" style={{ color: "#0a8f5c" }}>
+                <span className="cursor-default text-sm font-medium" style={{ color: "#0A7A57" }}>
                   Forgot password?
                 </span>
               </div>
@@ -491,8 +469,8 @@ export default function LoginPage() {
                 type="submit"
                 disabled={loading}
                 className="mt-2 w-full rounded-lg py-3 text-sm font-semibold text-white shadow-sm disabled:opacity-60"
-                style={{ background: "#0a8f5c" }}
-                whileHover={{ scale: 1.015, background: "#18b077" }}
+                style={{ background: "#12B886" }}
+                whileHover={{ scale: 1.015, background: "#0FA376" }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >

@@ -55,7 +55,7 @@ export function Sidebar({ role, moduleGym, moduleCourts }: Props) {
       </nav>
 
       <div className="border-t border-border px-4 py-3">
-        <p className="text-[11px] text-muted-foreground">Club Manager 360 v1.0 · 2026</p>
+        <p className="text-[11px] text-muted-foreground">MP360 v1.0 · 2026</p>
       </div>
     </aside>
   )

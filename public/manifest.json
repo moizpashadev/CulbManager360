@@ -1,0 +1,15 @@
+{
+  "name": "MP360 · Member Pulse",
+  "short_name": "MP360",
+  "description": "Multi-tenant SaaS platform for gyms, sports clubs, and fitness studios.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0D12",
+  "theme_color": "#0B0D12",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/mp360-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/mp360-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

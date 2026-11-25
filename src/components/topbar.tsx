@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Dumbbell, LogOut, ChevronDown } from "lucide-react"
+import { LogOut, ChevronDown } from "lucide-react"
 
 interface TopbarProps {
   userName: string
@@ -25,11 +25,10 @@ export function Topbar({ userName, tenantName, role }: TopbarProps) {
     >
       {/* Brand */}
       <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-primary">
-          <Dumbbell className="h-4 w-4 text-white" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/mp360-icon-emerald.svg" alt="" className="h-7 w-7 shrink-0 rounded" />
         <span className="hidden truncate text-[15px] font-semibold tracking-tight text-topbar-foreground sm:inline">
-          Club Manager 360
+          MP360
         </span>
         <span className="truncate rounded border border-primary/40 bg-primary/20 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-primary">
           {role === "SUPER_ADMIN" ? "Super Admin" : tenantName}
@@ -53,7 +52,7 @@ export function Topbar({ userName, tenantName, role }: TopbarProps) {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 rounded px-2 py-1.5 text-xs text-topbar-foreground/60 transition-colors hover:bg-white/10 hover:text-topbar-foreground sm:px-2.5"
+          className="flex items-center gap-1.5 rounded-md border border-white/20 bg-white/10 px-2 py-1.5 text-xs text-topbar-foreground transition-colors hover:bg-white/20 sm:px-2.5"
         >
           <LogOut className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Sign out</span>

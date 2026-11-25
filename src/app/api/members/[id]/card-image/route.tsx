@@ -54,7 +54,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
             flexDirection: "column",
             alignItems: "center",
             gap: "14px",
-            background: "#0a8f5c",
+            background: "#12B886",
             padding: "48px 32px 40px",
           }}
         >
@@ -97,13 +97,13 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
           }}
         >
           <div style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a" }}>MEMBER</div>
-          <div style={{ fontSize: "36px", fontWeight: 700, color: "#1a1a1a", marginTop: "6px", textAlign: "center" }}>
+          <div style={{ fontSize: "36px", fontWeight: 700, color: "#0B0D12", marginTop: "6px", textAlign: "center" }}>
             {memberName}
           </div>
           <div style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "2px", color: "#8a8a8a", marginTop: "22px" }}>
             MEMBER ID
           </div>
-          <div style={{ fontSize: "24px", fontWeight: 700, color: "#0a8f5c", marginTop: "2px" }}>{refNumber}</div>
+          <div style={{ fontSize: "24px", fontWeight: 700, color: "#12B886", marginTop: "2px" }}>{refNumber}</div>
 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

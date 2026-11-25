@@ -55,7 +55,7 @@ export default async function AdminPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-foreground">Platform Overview</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Manage all gyms and clubs on the Club Manager 360 platform
+          Manage all gyms and clubs on the MP360 platform
         </p>
       </div>
 

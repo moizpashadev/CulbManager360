@@ -4,43 +4,73 @@
 
 @layer base {
   :root {
-    /* Club Manager 360 × Kuickpay theme — #0a8f5c green, off-white surface */
-    --background: 40 20% 97%;          /* #f9f9f7 off-white */
-    --foreground: 0 0% 10%;            /* near-black text */
+    /* MP360 brand — mono (ink/white) + one accent (emerald). These
+       --color-* tokens are the source of truth; the legacy shadcn-style
+       names below (--background, --primary, etc.) alias them so every
+       existing `bg-primary`/`text-muted-foreground`/etc. class in the
+       app updates automatically without touching each component. */
+    --color-bg: #FFFFFF;
+    --color-surface: #F6F7F9;
+    --color-border: #E4E6EA;
+    --color-text: #0B0D12;
+    --color-text-muted: #5A606B;
+    --color-primary: #12B886;
+    --color-primary-hover: #0FA376;
+    --color-primary-text: #0A7A57;
+    --color-primary-soft: #E7F8F2;
+    --color-on-primary: #FFFFFF;
+    --color-warning: #FAB005;
+    --color-danger: #E03131;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --background: var(--color-bg);
+    --foreground: var(--color-text);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --card: var(--color-bg);
+    --card-foreground: var(--color-text);
 
-    --primary: 157 89% 30%;            /* #0a8f5c Kuickpay green */
-    --primary-foreground: 0 0% 100%;
+    --popover: var(--color-bg);
+    --popover-foreground: var(--color-text);
 
-    --secondary: 157 30% 95%;          /* #eef8f4 light mint */
-    --secondary-foreground: 157 89% 25%;
+    --primary: var(--color-primary);
+    --primary-foreground: var(--color-on-primary);
 
-    --muted: 40 10% 93%;               /* #eeecea warm gray */
-    --muted-foreground: 0 0% 45%;
+    --secondary: var(--color-surface);
+    --secondary-foreground: var(--color-primary-text);
 
-    --accent: 157 70% 40%;             /* #18b077 bright green */
-    --accent-foreground: 0 0% 100%;
+    --muted: var(--color-surface);
+    --muted-foreground: var(--color-text-muted);
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --accent: var(--color-primary-soft);
+    --accent-foreground: var(--color-primary-text);
 
-    --border: 0 0% 88%;                /* #e0e0e0 */
-    --input: 0 0% 88%;
-    --ring: 157 89% 30%;
+    --destructive: var(--color-danger);
+    --destructive-foreground: var(--color-on-primary);
+
+    --border: var(--color-border);
+    --input: var(--color-border);
+    --ring: var(--color-primary);
 
     --radius: 0.5rem;
 
-    --warning: 38 92% 50%;              /* #f59e0b amber */
-    --warning-foreground: 0 0% 100%;
+    --warning: var(--color-warning);
+    --warning-foreground: var(--color-text);
 
     /* Topbar */
-    --topbar: 0 0% 10%;                /* #1a1a1a */
-    --topbar-foreground: 0 0% 95%;
+    --topbar: var(--color-text);
+    --topbar-foreground: var(--color-on-primary);
+  }
+
+  .dark {
+    --color-bg: #0B0D12;
+    --color-surface: #14171E;
+    --color-border: #252A33;
+    --color-text: #FFFFFF;
+    --color-text-muted: #9AA0AB;
+    --color-primary: #12B886;
+    --color-primary-hover: #2FCB9A;
+    --color-primary-text: #2FCB9A;
+    --color-primary-soft: #0F2A22;
+    --color-on-primary: #FFFFFF;
   }
 
   * {

@@ -4,13 +4,13 @@ import { InstallPrompt } from "@/components/install-prompt"
 
 export const metadata: Metadata = {
   title: "Me360",
-  description: "Your gym membership, invoices, bookings and progress — in one place. Powered by Club Manager 360.",
+  description: "Your gym membership, invoices, bookings and progress — in one place. Powered by MP360.",
   manifest: "/member-manifest.json",
   icons: {
-    icon: "/icon.svg",
+    icon: "/me360-icon.svg",
     // iOS Safari only honors apple-touch-icon (and requires PNG — it does
     // not render SVG here), never the web app manifest's icons array.
-    apple: "/icon-180.png",
+    apple: "/me360-icon-180.png",
   },
   appleWebApp: {
     capable: true,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0a8f5c",
+  themeColor: "#12B886",
 }
 
 export default function MemberLayout({ children }: { children: React.ReactNode }) {

@@ -53,7 +53,7 @@ export default function PortalMorePage() {
         </button>
       </div>
 
-      <p className="pt-4 text-center text-xs text-muted-foreground">Me360 · Powered by Club Manager 360</p>
+      <p className="pt-4 text-center text-xs text-muted-foreground">Me360 · Powered by MP360</p>
     </div>
   )
 }

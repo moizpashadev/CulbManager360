@@ -13,15 +13,15 @@ export async function sendInviteEmail(email: string, firstName: string, gymName:
     subject: `${gymName} invited you to Me360`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #0a8f5c;">Hi ${firstName},</h2>
+        <h2 style="color: #12B886;">Hi ${firstName},</h2>
         <p><strong>${gymName}</strong> has set you up with access to Me360 — view your invoices, attendance, and progress, and book classes and courts yourself.</p>
         <p>
-          <a href="${loginUrl}" style="display: inline-block; background: #0a8f5c; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+          <a href="${loginUrl}" style="display: inline-block; background: #12B886; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">
             Log in to Me360
           </a>
         </p>
         <p style="color: #737373; font-size: 14px;">Just use this email address — we'll send you a one-time code, no password needed.</p>
-        <p style="color: #a3a3a3; font-size: 12px; margin-top: 24px;">Powered by Club Manager 360</p>
+        <p style="color: #a3a3a3; font-size: 12px; margin-top: 24px;">Powered by MP360</p>
       </div>
     `,
   })

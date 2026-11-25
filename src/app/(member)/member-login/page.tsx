@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Dumbbell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -79,15 +78,13 @@ export default function MemberLoginPage() {
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center px-4"
-      style={{ background: "radial-gradient(circle at 50% 0%, hsl(157 70% 92%) 0%, hsl(var(--background)) 55%)" }}
+      className="relative flex min-h-screen items-center justify-center px-4 bg-background"
     >
       <Card className="w-full max-w-sm shadow-lg">
         <CardHeader className="space-y-2 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-sm shadow-primary/30">
-            <Dumbbell className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <CardTitle className="text-2xl">Me360</CardTitle>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/me360-wordmark-color.svg" alt="Me360" className="mx-auto h-8 w-auto" />
+          <CardTitle className="sr-only">Me360</CardTitle>
           <CardDescription>
             {step === "email"
               ? "Enter your email to get a login code"
@@ -163,7 +160,7 @@ export default function MemberLoginPage() {
         </CardContent>
       </Card>
       <p className="absolute bottom-6 inset-x-0 text-center text-xs text-muted-foreground">
-        Powered by Club Manager 360
+        Powered by MP360
       </p>
     </div>
   )

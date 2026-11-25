@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const token = await signToken({
       sub: superAdmin.id,
       tenantId: "__super__",
-      tenantName: "Club Manager 360",
+      tenantName: "MP360",
       role: "SUPER_ADMIN",
       firstName: superAdmin.firstName,
       lastName: superAdmin.lastName,

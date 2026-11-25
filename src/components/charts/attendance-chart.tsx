@@ -37,7 +37,7 @@ export function AttendanceChart({ data }: { data: DataPoint[] }) {
           {data.map((entry, i) => (
             <Cell
               key={i}
-              fill={entry.count === max ? "#0a8f5c" : "#0a8f5c"}
+              fill={entry.count === max ? "#12B886" : "#12B886"}
               fillOpacity={0.2 + (entry.count / max) * 0.8}
             />
           ))}

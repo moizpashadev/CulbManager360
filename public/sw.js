@@ -35,13 +35,13 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: "Club Manager 360", body: event.data.text() };
+    payload = { title: "Me360", body: event.data.text() };
   }
   event.waitUntil(
-    self.registration.showNotification(payload.title || "Club Manager 360", {
+    self.registration.showNotification(payload.title || "Me360", {
       body: payload.body || "",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
+      icon: "/me360-icon.svg",
+      badge: "/me360-icon.svg",
       data: { url: payload.url || "/portal" },
     })
   );

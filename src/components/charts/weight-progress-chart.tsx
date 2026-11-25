@@ -44,7 +44,7 @@ export function WeightProgressChart({ data, targetWeight }: { data: DataPoint[];
           width={32}
           domain={["dataMin - 2", "dataMax + 2"]}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#0a8f5c", strokeWidth: 1, strokeDasharray: "4 2" }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#12B886", strokeWidth: 1, strokeDasharray: "4 2" }} />
         {targetWeight != null && (
           <ReferenceLine
             y={targetWeight}
@@ -56,10 +56,10 @@ export function WeightProgressChart({ data, targetWeight }: { data: DataPoint[];
         <Line
           type="monotone"
           dataKey="weight"
-          stroke="#0a8f5c"
+          stroke="#12B886"
           strokeWidth={2}
-          dot={{ r: 3, fill: "#0a8f5c", strokeWidth: 0 }}
-          activeDot={{ r: 5, fill: "#0a8f5c", strokeWidth: 0 }}
+          dot={{ r: 3, fill: "#12B886", strokeWidth: 0 }}
+          activeDot={{ r: 5, fill: "#12B886", strokeWidth: 0 }}
         />
       </LineChart>
     </ResponsiveContainer>

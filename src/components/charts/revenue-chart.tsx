@@ -25,8 +25,8 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
       <AreaChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor="#0a8f5c" stopOpacity={0.2} />
-            <stop offset="95%" stopColor="#0a8f5c" stopOpacity={0} />
+            <stop offset="5%"  stopColor="#12B886" stopOpacity={0.2} />
+            <stop offset="95%" stopColor="#12B886" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -44,15 +44,15 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
           tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}
           width={36}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#0a8f5c", strokeWidth: 1, strokeDasharray: "4 2" }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#12B886", strokeWidth: 1, strokeDasharray: "4 2" }} />
         <Area
           type="monotone"
           dataKey="revenue"
-          stroke="#0a8f5c"
+          stroke="#12B886"
           strokeWidth={2}
           fill="url(#revenueGrad)"
           dot={false}
-          activeDot={{ r: 4, fill: "#0a8f5c", strokeWidth: 0 }}
+          activeDot={{ r: 4, fill: "#12B886", strokeWidth: 0 }}
         />
       </AreaChart>
     </ResponsiveContainer>

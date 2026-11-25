@@ -91,7 +91,7 @@ export default async function PaymentMethodsPage() {
             {
               step: "2",
               title: "Payment Advice",
-              desc: "After the customer confirms payment, Kuickpay calls your Bill Payment endpoint. Club Manager 360 automatically marks the invoice as paid.",
+              desc: "After the customer confirms payment, Kuickpay calls your Bill Payment endpoint. MP360 automatically marks the invoice as paid.",
             },
             {
               step: "3",

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Dumbbell, LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { NotificationToggle } from "@/components/notification-toggle"
 import { cn } from "@/lib/utils"
@@ -30,9 +30,8 @@ export function MemberPortalTopbar({ email }: { email: string }) {
     <header className="border-b bg-card">
       <div className="flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-            <Dumbbell className="h-4 w-4 text-primary" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/me360-icon.svg" alt="" className="h-7 w-7 rounded-lg" />
           <span className="text-sm font-semibold">Me360</span>
         </div>
         <div className="flex items-center gap-3">

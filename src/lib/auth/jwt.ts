@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose"
 export interface JwtPayload {
   sub: string        // staffId or superAdminId
   tenantId: string   // "__super__" for super admins
-  tenantName: string // gym name or "Club Manager 360"
+  tenantName: string // gym name or "MP360"
   role: string
   firstName: string
   lastName: string
